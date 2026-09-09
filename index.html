@@ -6,35 +6,35 @@
 <title>Pemilihan Ketua OSIS</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <style>
 :root{
-  --ink:#182642;
-  --ink-2:#25355C;
-  --ink-soft:#57628A;
-  --paper:#F1ECDD;
-  --paper-2:#E7DFC9;
-  --paper-line: rgba(24,38,66,0.14);
-  --gold:#B7912E;
-  --gold-soft:#DDC98A;
-  --red:#A23B34;
-  --red-soft:#C97A70;
-  --good:#3F6B4C;
-  --shadow: 0 18px 40px -20px rgba(24,38,66,0.35);
-  --radius: 4px;
+  --ink:#14151F;
+  --ink-2:#20222F;
+  --ink-soft:#6B7280;
+  --paper:#FFFFFF;
+  --paper-2:#F2F2F5;
+  --paper-line: rgba(20,21,31,0.10);
+  --gold:#D9A62A;
+  --gold-soft:#F1D488;
+  --red:#DC2645;
+  --red-soft:#F0879A;
+  --good:#16A34A;
+  --shadow: 0 22px 48px -24px rgba(20,21,31,0.38);
+  --radius: 16px;
 }
 *{box-sizing:border-box;}
 html,body{margin:0;padding:0;}
 body{
   background:
-    radial-gradient(1200px 700px at 15% -10%, #1F3057 0%, var(--ink) 55%),
+    radial-gradient(1200px 700px at 15% -10%, #262A3D 0%, var(--ink) 55%),
     var(--ink);
   color:var(--ink);
-  font-family:'IBM Plex Sans', sans-serif;
+  font-family:'Inter', sans-serif;
   min-height:100vh;
   -webkit-font-smoothing:antialiased;
 }
-h1,h2,h3,.serif{font-family:'Fraunces', serif;}
+h1,h2,h3,.serif{font-family:'Space Grotesk', sans-serif; letter-spacing:-0.01em;}
 button{font-family:inherit;cursor:pointer;}
 a{color:inherit;}
 :focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
@@ -52,6 +52,7 @@ a{color:inherit;}
 .brand-text .title{font-size:16px;margin:0;font-weight:600;}
 .topbar .who{display:flex;align-items:center;gap:14px;font-size:14px;color:#C9D0E3;}
 .who .name{color:var(--paper);font-weight:600;}
+.role-pill{display:inline-flex;align-items:center;padding:2px 10px;border-radius:999px;font-size:11px;font-weight:600;background:rgba(221,201,138,0.18);color:var(--gold-soft);margin-right:8px;}
 .logout-btn{background:transparent;border:1px solid rgba(255,255,255,0.25);color:#C9D0E3;padding:7px 14px;border-radius:999px;font-size:13px;transition:border-color .15s, color .15s;}
 .logout-btn:hover{border-color:var(--gold-soft);color:var(--paper);}
 
@@ -66,11 +67,11 @@ a{color:inherit;}
 .login-intro p{color:#C9D0E3;font-size:15.5px;line-height:1.65;max-width:38ch;margin:0;}
 
 .ballot-card{background:var(--paper);border-radius:var(--radius);box-shadow:var(--shadow);padding:8px;position:relative;}
-.ballot-card-inner{border:1px solid var(--paper-line);border-radius:2px;padding:34px 32px 30px;}
+.ballot-card-inner{border:1px solid var(--paper-line);border-radius:10px;padding:34px 32px 30px;}
 
 .field{margin-bottom:16px;}
 .field label{display:block;font-size:12.5px;color:var(--ink-soft);margin-bottom:6px;}
-.field input{width:100%;padding:11px 13px;border:1px solid var(--paper-line);border-radius:3px;background:#FBF9F2;font-size:15px;color:var(--ink);font-family:inherit;}
+.field input{width:100%;padding:11px 13px;border:1px solid var(--paper-line);border-radius:12px;background:#FBF9F2;font-size:15px;color:var(--ink);font-family:inherit;}
 .field input:focus{border-color:var(--ink-soft);}
 .field .hint{font-size:12px;color:var(--ink-soft);margin-top:6px;}
 
@@ -79,16 +80,16 @@ a{color:inherit;}
 .stub-divider::before{left:-40px;}
 .stub-divider::after{right:-40px;}
 
-.submit-btn{width:100%;padding:13px;border:none;border-radius:3px;background:var(--red);color:#F6EFE4;font-size:14.5px;font-weight:600;letter-spacing:.01em;margin-top:6px;transition:transform .12s, background .15s;}
+.submit-btn{width:100%;padding:13px;border:none;border-radius:12px;background:var(--red);color:#F6EFE4;font-size:14.5px;font-weight:600;letter-spacing:.01em;margin-top:6px;transition:transform .12s, background .15s;}
 .submit-btn:hover{background:#8F332D;}
 .submit-btn:active{transform:scale(0.98) rotate(-0.3deg);}
 .submit-btn:disabled{opacity:.6;cursor:default;}
-.form-error{background:#F6E3E0;border:1px solid #E3B9B3;color:#8F332D;font-size:13px;padding:10px 12px;border-radius:3px;margin-bottom:16px;}
+.form-error{background:#F6E3E0;border:1px solid #E3B9B3;color:#8F332D;font-size:13px;padding:10px 12px;border-radius:12px;margin-bottom:16px;}
 
 /* setup screen */
 .setup-box{max-width:560px;background:var(--paper);border-radius:var(--radius);padding:32px 30px;box-shadow:var(--shadow);}
 .setup-box h2{margin-top:0;}
-.setup-box code{background:var(--paper-2);padding:2px 6px;border-radius:3px;font-size:13px;}
+.setup-box code{background:var(--paper-2);padding:2px 6px;border-radius:12px;font-size:13px;}
 .setup-box ol{padding-left:20px;line-height:1.8;font-size:14.5px;}
 
 /* candidate grid */
@@ -107,7 +108,7 @@ a{color:inherit;}
 .misi-panel{font-size:13.5px;line-height:1.6;color:var(--ink);margin-bottom:14px;}
 .misi-panel .visi{margin:0 0 8px;font-style:italic;color:var(--ink-soft);}
 .misi-panel ul{margin:0;padding-left:18px;}
-.pilih-btn{margin-top:auto;width:100%;padding:11px;border:1.5px solid var(--ink);border-radius:3px;background:transparent;color:var(--ink);font-weight:600;font-size:14px;transition:background .15s,color .15s,transform .12s;}
+.pilih-btn{margin-top:auto;width:100%;padding:11px;border:1.5px solid var(--ink);border-radius:12px;background:transparent;color:var(--ink);font-weight:600;font-size:14px;transition:background .15s,color .15s,transform .12s;}
 .pilih-btn:hover{background:var(--ink);color:var(--paper);}
 .pilih-btn:active{transform:scale(0.97);}
 .pilih-btn:disabled{opacity:.5;}
@@ -118,7 +119,7 @@ a{color:inherit;}
 .modal-box h3{margin:0 0 10px;font-size:20px;}
 .modal-box p{font-size:14.5px;color:var(--ink-soft);line-height:1.6;margin:0 0 22px;}
 .modal-actions{display:flex;gap:10px;}
-.modal-actions button{flex:1;padding:11px;border-radius:3px;font-size:14px;font-weight:600;}
+.modal-actions button{flex:1;padding:11px;border-radius:12px;font-size:14px;font-weight:600;}
 .modal-actions .cancel{background:transparent;border:1.5px solid var(--paper-line);color:var(--ink-soft);}
 .modal-actions .confirm{background:var(--red);border:none;color:#F6EFE4;}
 
@@ -128,7 +129,7 @@ a{color:inherit;}
 @keyframes stamp-in{from{transform:scale(1.6) rotate(-14deg);opacity:0;}to{transform:scale(1) rotate(-6deg);opacity:1;}}
 .thanks-box h2{margin:0 0 10px;font-size:22px;}
 .thanks-box p{color:var(--ink-soft);font-size:14.5px;line-height:1.6;margin:0 0 24px;}
-.ghost-btn{background:transparent;border:1.5px solid var(--ink);color:var(--ink);padding:11px 20px;border-radius:3px;font-size:14px;font-weight:600;}
+.ghost-btn{background:transparent;border:1.5px solid var(--ink);color:var(--ink);padding:11px 20px;border-radius:12px;font-size:14px;font-weight:600;}
 .ghost-btn:hover{background:var(--ink);color:var(--paper);}
 
 /* monitor */
@@ -152,10 +153,18 @@ a{color:inherit;}
 .live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--good);margin-right:6px;animation:pulse 1.6s infinite;}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
 
+/* countdown reveal */
+.countdown-screen{position:fixed;inset:0;background:radial-gradient(1200px 700px at 50% 20%, #262A3D 0%, var(--ink) 60%);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:80;}
+.countdown-label{color:var(--gold-soft);font-size:14px;letter-spacing:.08em;margin-bottom:18px;text-transform:uppercase;}
+.countdown-num{font-family:'Fraunces',serif;font-size:150px;font-weight:600;color:var(--paper);line-height:1;animation:tick .8s cubic-bezier(.2,1.2,.4,1);}
+@keyframes tick{from{transform:scale(1.45);opacity:0;}to{transform:scale(1);opacity:1;}}
+.countdown-sub{color:#C9D0E3;font-size:14.5px;margin-top:18px;}
+
 /* result (published) */
 .result-wrap{width:100%;max-width:640px;text-align:center;}
 .winner-halo{position:relative;width:150px;height:150px;margin:0 auto 20px;}
-.halo-rays{position:absolute;inset:-24px;border-radius:50%;background:conic-gradient(from 0deg, var(--gold-soft) 0deg 6deg, transparent 6deg 24deg);opacity:.55;}
+.halo-rays{position:absolute;inset:-24px;border-radius:50%;background:conic-gradient(from 0deg, var(--gold-soft) 0deg 6deg, transparent 6deg 24deg);opacity:.55;animation:spin 18s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
 .winner-photo{position:absolute;inset:0;border-radius:50%;overflow:hidden;border:3px solid var(--gold-soft);box-shadow:var(--shadow);}
 .winner-photo img{width:100%;height:100%;object-fit:cover;}
 .result-wrap .tag{color:var(--gold-soft);font-size:13px;letter-spacing:.03em;margin:0 0 10px;}
@@ -166,13 +175,13 @@ a{color:inherit;}
 .rank-row:last-child{margin-bottom:0;}
 .rank-row .rn{width:24px;font-size:13px;color:var(--ink-soft);flex-shrink:0;}
 .rank-row .rname{font-size:13.5px;font-weight:600;width:130px;flex-shrink:0;}
-.rank-bar-track{flex:1;height:20px;background:var(--paper-2);border-radius:3px;overflow:hidden;}
-.rank-bar-fill{height:100%;border-radius:3px;transition:width 1s cubic-bezier(.3,.7,.2,1);}
+.rank-bar-track{flex:1;height:20px;background:var(--paper-2);border-radius:12px;overflow:hidden;}
+.rank-bar-fill{height:100%;border-radius:12px;transition:width 1s cubic-bezier(.3,.7,.2,1);}
 .rank-row.winner .rank-bar-fill{background:var(--gold);}
 .rank-row:not(.winner) .rank-bar-fill{background:var(--ink-soft);}
 .rank-row .rv{width:70px;text-align:right;font-size:13px;color:var(--ink-soft);flex-shrink:0;}
 
-.net-error{max-width:420px;background:#F6E3E0;border:1px solid #E3B9B3;color:#8F332D;font-size:13.5px;padding:12px 14px;border-radius:3px;margin:0 auto 18px;text-align:center;}
+.net-error{max-width:420px;background:#F6E3E0;border:1px solid #E3B9B3;color:#8F332D;font-size:13.5px;padding:12px 14px;border-radius:12px;margin:0 auto 18px;text-align:center;}
 
 @media (max-width:900px){
   .login-wrap{grid-template-columns:1fr;gap:34px;text-align:left;}
@@ -193,7 +202,7 @@ a{color:inherit;}
    KONFIGURASI — wajib diisi sebelum di-deploy
    Tempel URL Web App Google Apps Script kamu di sini
    ========================================================================= */
-const API_URL = "https://script.google.com/macros/s/AKfycbxD10hlyDmINnYCBpZF2aZK4aUPYG-4_rkvhMYZbI5et_pm0L8fATlY101vsHSa0gdp/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbyMBuVMGAgNKvaWrppnAwoB4Br9mUrIa4uG3_jRg6lANHWsK1ZaA-w0J_PfahXF59Pv/exec";
 const SEKOLAH = "SMP 2 Sragi";
 const TAHUN_AJARAN = "2026/2027";
 const MONITOR_POLL_MS = 6000; // seberapa sering halaman ini cek partisipasi & status hasil
@@ -215,6 +224,7 @@ async function apiPost(payload){
   if(!res.ok) throw new Error('Gagal terhubung ke server (' + res.status + ')');
   return res.json();
 }
+function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
 
 /* ============ app state ============ */
 const state = {
@@ -227,9 +237,11 @@ const state = {
   loginError:'',
   netError:'',
   voterCount:0,
-  totalSiswa:0,
+  totalPemilih:0,
   published:false,
   tally:null,
+  revealDone:false,
+  countdownVal:null,
   pollHandle:null
 };
 
@@ -257,6 +269,28 @@ function render(){
       html+'</div></div>';
   }
   if(state.confirmCandidate){ app.innerHTML += modalConfirm(state.confirmCandidate); }
+  if(state.countdownVal !== null){ app.innerHTML += screenCountdown(); }
+}
+
+function screenCountdown(){
+  const v = state.countdownVal;
+  return `
+  <div class="countdown-screen">
+    <div class="countdown-label">Mengungkap Ketua OSIS Terpilih</div>
+    <div class="countdown-num">${v > 0 ? v : '✦'}</div>
+    <div class="countdown-sub">${v > 0 ? 'Bersiap…' : 'Mengumumkan hasil…'}</div>
+  </div>`;
+}
+
+async function runCountdownThenReveal(){
+  for(const v of [3,2,1,0]){
+    state.countdownVal = v;
+    render();
+    await sleep(v === 0 ? 700 : 800);
+  }
+  state.countdownVal = null;
+  state.revealDone = true;
+  render();
 }
 
 function topbar(){
@@ -271,7 +305,7 @@ function topbar(){
       </div>
     </div>
     <div class="who">
-      <span>Siswa · <span class="name">${esc(state.user.nama)}</span></span>
+      <span><span class="role-pill">${esc(state.user.role||'Siswa')}</span><span class="name">${esc(state.user.nama)}</span></span>
       <button class="logout-btn" data-action="logout">Keluar</button>
     </div>
   </div>`;
@@ -291,27 +325,27 @@ function screenSetup(){
   </div>`;
 }
 
-/* ============ screen: login (siswa saja) ============ */
+/* ============ screen: login (guru & siswa) ============ */
 function screenLogin(){
   return `
   <div class="login-wrap">
     <div class="login-intro">
       <div class="eyebrow-seal">P</div>
       <h1>Pemilihan Ketua OSIS ${esc(TAHUN_AJARAN)}</h1>
-      <p>${esc(SEKOLAH)} — masuk dengan akun siswa kamu untuk memberikan suara. Satu siswa, satu suara.</p>
+      <p>${esc(SEKOLAH)} — masuk dengan akun guru atau siswa kamu untuk memberikan suara. Satu orang, satu suara.</p>
     </div>
     <div class="ballot-card">
       <div class="ballot-card-inner">
         ${state.loginError ? '<div class="form-error">'+esc(state.loginError)+'</div>' : ''}
         <div class="field">
-          <label for="in-nisn">Username (NISN)</label>
-          <input id="in-nisn" inputmode="numeric" autocomplete="username" placeholder="Contoh: 0051234567">
+          <label for="in-id">Username (NISN / NIP)</label>
+          <input id="in-id" inputmode="numeric" autocomplete="username" placeholder="Contoh: 0051234567">
         </div>
         <div class="stub-divider"></div>
         <div class="field">
           <label for="in-pass">Password</label>
-          <input id="in-pass" type="password" inputmode="numeric" autocomplete="current-password" placeholder="Password kamu = NISN kamu">
-          <p class="hint">Password default adalah NISN kamu sendiri.</p>
+          <input id="in-pass" type="password" inputmode="numeric" autocomplete="current-password" placeholder="Password kamu = NISN/NIP kamu">
+          <p class="hint">Password default adalah ID (NISN/NIP) kamu sendiri.</p>
         </div>
         <button class="submit-btn" data-action="login" ${state.submitting?'disabled':''}>${state.submitting?'Memeriksa…':'Masuk'}</button>
       </div>
@@ -377,7 +411,7 @@ function screenThanks(){
 
 /* ============ screen: monitor (partisipasi, sebelum hasil diumumkan) ============ */
 function screenMonitor(){
-  const total = state.totalSiswa || 0;
+  const total = state.totalPemilih || 0;
   const count = state.voterCount || 0;
   const pct = total > 0 ? Math.min(1, count/total) : 0;
   const r = 90, circ = 2*Math.PI*r;
@@ -399,19 +433,19 @@ function screenMonitor(){
         </svg>
         <div class="ring-center">
           <div class="count">${count}</div>
-          <div class="of">dari ${total} siswa</div>
+          <div class="of">dari ${total} pemilih</div>
         </div>
       </div>
       <h2><span class="live-dot"></span>Pemantauan Partisipasi</h2>
-      <p class="sub">Jumlah suara yang sudah masuk, diperbarui otomatis dari server.</p>
+      <p class="sub">Jumlah suara yang sudah masuk (guru &amp; siswa), diperbarui otomatis dari server.</p>
       <p class="strip-label">Kandidat yang bertarung</p>
       <div class="candidate-strip">${strip}</div>
-      <p class="monitor-note">Hasil akhir akan otomatis tampil di halaman ini setelah panitia mengumumkannya lewat dashboard.</p>
+      <p class="monitor-note">Hasil akhir akan otomatis tampil di halaman ini begitu panitia mengumumkannya.</p>
     </div>
   </div>`;
 }
 
-/* ============ screen: result (setelah admin publish) ============ */
+/* ============ screen: result (setelah admin publish & countdown selesai) ============ */
 function screenResult(){
   const tally = state.tally || {};
   const ranked = state.candidates
@@ -449,14 +483,14 @@ function screenResult(){
 /* ============ actions ============ */
 async function handleLogin(){
   state.loginError = '';
-  const nisn = document.getElementById('in-nisn').value.trim();
+  const id = document.getElementById('in-id').value.trim();
   const pass = document.getElementById('in-pass').value.trim();
-  if(!nisn || !pass){ state.loginError = 'Isi username dan password terlebih dahulu.'; render(); return; }
+  if(!id || !pass){ state.loginError = 'Isi username dan password terlebih dahulu.'; render(); return; }
   state.submitting = true; render();
   try{
-    const res = await apiPost({action:'loginSiswa', nisn, password: pass});
+    const res = await apiPost({action:'loginPemilih', id, password: pass});
     if(!res.ok){ state.loginError = res.error || 'Login gagal.'; state.submitting=false; render(); return; }
-    state.user = {nisn, nama: res.nama};
+    state.user = {id, nama: res.nama, role: res.role || 'Siswa'};
     await afterLogin();
   }catch(err){
     state.loginError = 'Gagal terhubung ke server. Coba lagi.'; state.submitting=false; render();
@@ -466,17 +500,27 @@ async function handleLogin(){
 async function afterLogin(){
   state.submitting = true; render();
   try{
-    const [cand, voted, voterCount, totalSiswa] = await Promise.all([
+    const [cand, voted, voterCount, voterStats, status] = await Promise.all([
       apiGet({action:'getCandidates'}),
-      apiGet({action:'checkVoted', nisn: state.user.nisn}),
+      apiGet({action:'checkVoted', id: state.user.id}),
       apiGet({action:'getVoterCount'}),
-      apiGet({action:'getTotalSiswa'})
+      apiGet({action:'getVoterStats'}),
+      apiGet({action:'getResultStatus'})
     ]);
     state.candidates = Array.isArray(cand) ? cand : [];
     state.voterCount = voterCount.count || 0;
-    state.totalSiswa = totalSiswa.total || 0;
+    state.totalPemilih = voterStats.total || 0;
     state.submitting = false;
     state.screen = voted.voted ? 'monitor' : 'vote';
+
+    if(status.published){
+      state.tally = status.tally || {};
+      if(state.screen === 'monitor'){
+        render();
+        await runCountdownThenReveal();
+      }
+      state.published = true;
+    }
   }catch(err){
     state.netError = 'Gagal memuat data kandidat.'; state.submitting=false;
   }
@@ -486,15 +530,21 @@ async function afterLogin(){
 
 async function refreshMonitor(){
   try{
-    const [voterCount, totalSiswa, status] = await Promise.all([
+    const [voterCount, voterStats, status] = await Promise.all([
       apiGet({action:'getVoterCount'}),
-      apiGet({action:'getTotalSiswa'}),
+      apiGet({action:'getVoterStats'}),
       apiGet({action:'getResultStatus'})
     ]);
     state.voterCount = voterCount.count || 0;
-    state.totalSiswa = totalSiswa.total || 0;
+    state.totalPemilih = voterStats.total || 0;
+    const justPublished = status.published && !state.published;
+    if(status.published){ state.tally = status.tally || {}; }
     state.published = !!status.published;
-    if(state.published){ state.tally = status.tally || {}; }
+
+    if(justPublished && !state.revealDone && state.screen === 'monitor'){
+      await runCountdownThenReveal();
+      return;
+    }
   }catch(err){ /* diamkan, biarkan angka lama tampil */ }
   render();
 }
@@ -502,7 +552,7 @@ async function refreshMonitor(){
 function startPolling(){
   if(state.pollHandle) clearInterval(state.pollHandle);
   state.pollHandle = setInterval(() => {
-    if(state.screen === 'monitor') refreshMonitor();
+    if(state.screen === 'monitor' && state.countdownVal === null) refreshMonitor();
   }, MONITOR_POLL_MS);
 }
 
@@ -511,7 +561,7 @@ async function submitVote(){
   if(!c) return;
   state.submitting = true; render();
   try{
-    const res = await apiPost({action:'vote', nisn: state.user.nisn, nomor: c.nomor});
+    const res = await apiPost({action:'vote', id: state.user.id, nomor: c.nomor});
     state.submitting = false;
     state.confirmCandidate = null;
     if(res.ok){
@@ -539,7 +589,7 @@ app.addEventListener('click', (e) => {
   if(action === 'login'){ handleLogin(); }
   else if(action === 'logout'){
     if(state.pollHandle) clearInterval(state.pollHandle);
-    Object.assign(state, {screen:'login', user:null, candidates:[], loginError:'', netError:'', confirmCandidate:null, tally:null, published:false, pollHandle:null});
+    Object.assign(state, {screen:'login', user:null, candidates:[], loginError:'', netError:'', confirmCandidate:null, tally:null, published:false, revealDone:false, countdownVal:null, pollHandle:null});
     render();
   }
   else if(action === 'toggle-misi'){
