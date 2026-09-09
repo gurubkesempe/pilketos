@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pemilihan Ketua OSIS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#182642;
+  --ink-2:#25355C;
+  --ink-soft:#57628A;
+  --paper:#F1ECDD;
+  --paper-2:#E7DFC9;
+  --paper-line: rgba(24,38,66,0.14);
+  --gold:#B7912E;
+  --gold-soft:#DDC98A;
+  --red:#A23B34;
+  --red-soft:#C97A70;
+  --good:#3F6B4C;
+  --shadow: 0 18px 40px -20px rgba(24,38,66,0.35);
+  --radius: 4px;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:
+    radial-gradient(1200px 700px at 15% -10%, #1F3057 0%, var(--ink) 55%),
+    var(--ink);
+  color:var(--ink);
+  font-family:'IBM Plex Sans', sans-serif;
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,.serif{font-family:'Fraunces', serif;}
+button{font-family:inherit;cursor:pointer;}
+a{color:inherit;}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;}
+}
+
+.shell{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+/* ---------- topbar ---------- */
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px clamp(18px,4vw,48px);
+  color:var(--paper);
+}
+.topbar .brand{display:flex;align-items:center;gap:12px;}
+.brand-mark{
+  width:34px;height:34px;border-radius:50%;
+  border:1.5px solid var(--gold-soft);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Fraunces',serif;font-size:16px;color:var(--gold-soft);
+}
+.brand-text .school{font-size:13px;letter-spacing:.02em;color:var(--gold-soft);margin:0;}
+.brand-text .title{font-size:16px;margin:0;font-weight:600;}
+.topbar .who{display:flex;align-items:center;gap:14px;font-size:14px;color:#C9D0E3;}
+.who .name{color:var(--paper);font-weight:600;}
+.logout-btn{
+  background:transparent;border:1px solid rgba(255,255,255,0.25);color:#C9D0E3;
+  padding:7px 14px;border-radius:999px;font-size:13px;
+  transition:border-color .15s, color .15s;
+}
+.logout-btn:hover{border-color:var(--gold-soft);color:var(--paper);}
+
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:20px clamp(16px,4vw,48px) 48px;}
+.stage.top{align-items:flex-start;}
+
+/* ---------- login ---------- */
+.login-wrap{width:100%;max-width:1040px;display:grid;grid-template-columns:1.05fr 1fr;gap:56px;align-items:center;}
+.login-intro{color:var(--paper);}
+.login-intro .eyebrow-seal{
+  width:56px;height:56px;border-radius:50%;border:1.5px solid var(--gold-soft);
+  display:flex;align-items:center;justify-content:center;margin-bottom:22px;
+  font-family:'Fraunces',serif;font-size:22px;color:var(--gold-soft);
+}
+.login-intro h1{font-size:clamp(32px,4vw,44px);line-height:1.1;font-weight:600;margin:0 0 16px;}
+.login-intro p{color:#C9D0E3;font-size:15.5px;line-height:1.65;max-width:38ch;margin:0;}
+
+.ballot-card{
+  background:var(--paper);border-radius:var(--radius);box-shadow:var(--shadow);
+  padding:8px;position:relative;
+}
+.ballot-card-inner{
+  border:1px solid var(--paper-line);border-radius:2px;padding:34px 32px 30px;
+}
+.role-tabs{display:flex;gap:0;margin-bottom:26px;border-bottom:1px solid var(--paper-line);}
+.role-tab{
+  flex:1;background:none;border:none;padding:0 0 14px;font-size:14.5px;font-weight:600;
+  color:var(--ink-soft);border-bottom:2px solid transparent;margin-bottom:-1px;
+  transition:color .15s;
+}
+.role-tab.active{color:var(--ink);border-bottom-color:var(--red);}
+.role-tab:first-child{text-align:left;}
+.role-tab:last-child{text-align:right;}
+
+.field{margin-bottom:16px;}
+.field label{display:block;font-size:12.5px;color:var(--ink-soft);margin-bottom:6px;}
+.field input{
+  width:100%;padding:11px 13px;border:1px solid var(--paper-line);border-radius:3px;
+  background:#FBF9F2;font-size:15px;color:var(--ink);font-family:inherit;
+}
+.field input:focus{border-color:var(--ink-soft);}
+.field .hint{font-size:12px;color:var(--ink-soft);margin-top:6px;}
+
+.stub-divider{
+  position:relative;height:1px;border-top:1.5px dashed var(--paper-line);margin:22px 0 20px;
+}
+.stub-divider::before,.stub-divider::after{
+  content:'';position:absolute;top:-7px;width:14px;height:14px;border-radius:50%;
+  background:var(--ink);
+}
+.stub-divider::before{left:-40px;}
+.stub-divider::after{right:-40px;}
+
+.submit-btn{
+  width:100%;padding:13px;border:none;border-radius:3px;background:var(--red);color:#F6EFE4;
+  font-size:14.5px;font-weight:600;letter-spacing:.01em;margin-top:6px;
+  transition:transform .12s, background .15s;
+}
+.submit-btn:hover{background:#8F332D;}
+.submit-btn:active{transform:scale(0.98) rotate(-0.3deg);}
+.submit-btn:disabled{opacity:.6;cursor:default;}
+.form-error{
+  background:#F6E3E0;border:1px solid #E3B9B3;color:#8F332D;font-size:13px;
+  padding:10px 12px;border-radius:3px;margin-bottom:16px;
+}
+
+/* ---------- setup screen ---------- */
+.setup-box{max-width:560px;background:var(--paper);border-radius:var(--radius);padding:32px 30px;box-shadow:var(--shadow);}
+.setup-box h2{margin-top:0;}
+.setup-box code{background:var(--paper-2);padding:2px 6px;border-radius:3px;font-size:13px;}
+.setup-box ol{padding-left:20px;line-height:1.8;font-size:14.5px;}
+
+/* ---------- candidate grid ---------- */
+.vote-head{width:100%;max-width:1040px;margin:0 auto 28px;color:var(--paper);}
+.vote-head h2{font-size:26px;margin:0 0 6px;font-weight:600;}
+.vote-head p{color:#C9D0E3;font-size:14.5px;margin:0;}
+.candidate-grid{
+  width:100%;max-width:1040px;margin:0 auto;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:22px;
+}
+.candidate-card{
+  background:var(--paper);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);
+  display:flex;flex-direction:column;
+}
+.candidate-photo-wrap{position:relative;aspect-ratio:4/3;background:var(--paper-2);}
+.candidate-photo-wrap img{width:100%;height:100%;object-fit:cover;display:block;}
+.seal{
+  position:absolute;top:14px;left:14px;width:42px;height:42px;border-radius:50%;
+  background:var(--ink);border:1.5px solid var(--gold-soft);color:var(--gold-soft);
+  display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;
+  font-size:16px;font-weight:600;
+}
+.candidate-body{padding:18px 20px 20px;flex:1;display:flex;flex-direction:column;}
+.candidate-body h3{font-size:19px;margin:0 0 2px;font-weight:600;}
+.candidate-body .kelas{font-size:13px;color:var(--ink-soft);margin:0 0 14px;}
+.misi-toggle{
+  background:none;border:none;padding:0;font-size:13px;color:var(--ink-soft);
+  text-decoration:underline;text-underline-offset:3px;text-align:left;margin-bottom:12px;
+}
+.misi-panel{font-size:13.5px;line-height:1.6;color:var(--ink);margin-bottom:14px;}
+.misi-panel .visi{margin:0 0 8px;font-style:italic;color:var(--ink-soft);}
+.misi-panel ul{margin:0;padding-left:18px;}
+.pilih-btn{
+  margin-top:auto;width:100%;padding:11px;border:1.5px solid var(--ink);border-radius:3px;
+  background:transparent;color:var(--ink);font-weight:600;font-size:14px;
+  transition:background .15s,color .15s,transform .12s;
+}
+.pilih-btn:hover{background:var(--ink);color:var(--paper);}
+.pilih-btn:active{transform:scale(0.97);}
+.pilih-btn:disabled{opacity:.5;}
+
+/* ---------- modal ---------- */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(15,22,40,0.62);display:flex;align-items:center;justify-content:center;
+  padding:20px;z-index:50;
+}
+.modal-box{background:var(--paper);border-radius:var(--radius);max-width:400px;width:100%;padding:28px 26px;box-shadow:var(--shadow);}
+.modal-box h3{margin:0 0 10px;font-size:20px;}
+.modal-box p{font-size:14.5px;color:var(--ink-soft);line-height:1.6;margin:0 0 22px;}
+.modal-actions{display:flex;gap:10px;}
+.modal-actions button{flex:1;padding:11px;border-radius:3px;font-size:14px;font-weight:600;}
+.modal-actions .cancel{background:transparent;border:1.5px solid var(--paper-line);color:var(--ink-soft);}
+.modal-actions .confirm{background:var(--red);border:none;color:#F6EFE4;}
+
+/* ---------- thanks ---------- */
+.thanks-box{max-width:420px;text-align:center;background:var(--paper);border-radius:var(--radius);padding:44px 34px;box-shadow:var(--shadow);}
+.stamp-check{
+  width:74px;height:74px;border-radius:50%;border:2px solid var(--good);color:var(--good);
+  display:flex;align-items:center;justify-content:center;margin:0 auto 20px;
+  font-size:34px;animation:stamp-in .4s cubic-bezier(.2,1.4,.4,1);
+}
+@keyframes stamp-in{from{transform:scale(1.6) rotate(-14deg);opacity:0;}to{transform:scale(1) rotate(-6deg);opacity:1;}}
+.thanks-box h2{margin:0 0 10px;font-size:22px;}
+.thanks-box p{color:var(--ink-soft);font-size:14.5px;line-height:1.6;margin:0 0 24px;}
+.ghost-btn{
+  background:transparent;border:1.5px solid var(--ink);color:var(--ink);padding:11px 20px;
+  border-radius:3px;font-size:14px;font-weight:600;
+}
+.ghost-btn:hover{background:var(--ink);color:var(--paper);}
+
+/* ---------- monitor ---------- */
+.monitor-wrap{width:100%;max-width:760px;}
+.monitor-panel{background:var(--paper);border-radius:var(--radius);box-shadow:var(--shadow);padding:40px clamp(24px,5vw,52px);text-align:center;}
+.ring-wrap{position:relative;width:200px;height:200px;margin:0 auto 22px;}
+.ring-wrap svg{transform:rotate(-90deg);}
+.ring-track{fill:none;stroke:var(--paper-2);stroke-width:10;}
+.ring-fill{fill:none;stroke:var(--red);stroke-width:10;stroke-linecap:round;transition:stroke-dashoffset 1.1s cubic-bezier(.3,.7,.2,1);}
+.ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.ring-center .count{font-family:'Fraunces',serif;font-size:44px;font-weight:600;line-height:1;}
+.ring-center .of{font-size:13px;color:var(--ink-soft);margin-top:4px;}
+.monitor-panel h2{font-size:20px;margin:0 0 4px;}
+.monitor-panel .sub{font-size:13.5px;color:var(--ink-soft);margin:0 0 30px;}
+.strip-label{font-size:12.5px;color:var(--ink-soft);margin:0 0 12px;text-align:left;}
+.candidate-strip{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:8px;}
+.strip-item{width:64px;text-align:center;}
+.strip-item img{width:64px;height:64px;border-radius:50%;object-fit:cover;border:2px solid var(--paper-2);display:block;margin:0 auto 8px;}
+.strip-item .n{font-size:11px;color:var(--ink-soft);}
+.final-btn{
+  margin-top:30px;background:var(--ink);color:var(--paper);border:none;padding:14px 26px;
+  border-radius:3px;font-size:14.5px;font-weight:600;
+  transition:transform .12s, background .15s;
+}
+.final-btn:hover{background:var(--ink-2);}
+.final-btn:active{transform:scale(0.97);}
+.final-btn:disabled{opacity:.6;}
+.monitor-note{font-size:13px;color:var(--ink-soft);margin-top:26px;}
+.back-link{background:none;border:none;color:#C9D0E3;font-size:13.5px;margin-top:20px;text-decoration:underline;text-underline-offset:3px;}
+
+/* ---------- countdown ---------- */
+.countdown-screen{position:fixed;inset:0;background:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:60;}
+.countdown-label{color:var(--gold-soft);font-size:14px;letter-spacing:.04em;margin-bottom:18px;}
+.countdown-num{font-family:'Fraunces',serif;font-size:180px;font-weight:600;color:var(--paper);line-height:1;
+  animation:tick .85s ease-out;}
+@keyframes tick{from{transform:scale(1.35);opacity:0;}to{transform:scale(1);opacity:1;}}
+.countdown-sub{color:#C9D0E3;font-size:14.5px;margin-top:18px;}
+
+/* ---------- result ---------- */
+.result-wrap{width:100%;max-width:640px;text-align:center;}
+.winner-halo{position:relative;width:180px;height:180px;margin:0 auto 22px;}
+.halo-rays{
+  position:absolute;inset:-30px;border-radius:50%;
+  background:conic-gradient(from 0deg, var(--gold-soft) 0deg 6deg, transparent 6deg 24deg);
+  opacity:.55;
+}
+.winner-photo{position:absolute;inset:0;border-radius:50%;overflow:hidden;border:3px solid var(--gold-soft);box-shadow:var(--shadow);}
+.winner-photo img{width:100%;height:100%;object-fit:cover;}
+.result-wrap .tag{color:var(--gold-soft);font-size:13px;letter-spacing:.03em;margin:0 0 10px;}
+.result-wrap h1{color:var(--paper);font-size:clamp(28px,4vw,38px);margin:0 0 4px;font-weight:600;}
+.result-wrap .kelas{color:#C9D0E3;font-size:14px;margin:0 0 24px;}
+.vote-count{font-family:'Fraunces',serif;font-size:56px;color:var(--paper);font-weight:600;line-height:1;}
+.vote-count .label{display:block;font-family:'IBM Plex Sans',sans-serif;font-size:13px;color:#C9D0E3;font-weight:400;margin-top:6px;}
+.result-actions{margin-top:34px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+
+.rank-panel{margin-top:30px;background:var(--paper);border-radius:var(--radius);box-shadow:var(--shadow);padding:26px 28px;text-align:left;}
+.rank-row{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+.rank-row:last-child{margin-bottom:0;}
+.rank-row .rn{width:24px;font-size:13px;color:var(--ink-soft);flex-shrink:0;}
+.rank-row .rname{font-size:13.5px;font-weight:600;width:130px;flex-shrink:0;}
+.rank-bar-track{flex:1;height:20px;background:var(--paper-2);border-radius:3px;overflow:hidden;}
+.rank-bar-fill{height:100%;border-radius:3px;transition:width 1s cubic-bezier(.3,.7,.2,1);}
+.rank-row.winner .rank-bar-fill{background:var(--gold);}
+.rank-row:not(.winner) .rank-bar-fill{background:var(--ink-soft);}
+.rank-row .rv{width:70px;text-align:right;font-size:13px;color:var(--ink-soft);flex-shrink:0;}
+
+.net-error{
+  max-width:420px;background:#F6E3E0;border:1px solid #E3B9B3;color:#8F332D;font-size:13.5px;
+  padding:12px 14px;border-radius:3px;margin:0 auto 18px;text-align:center;
+}
+
+@media (max-width:900px){
+  .login-wrap{grid-template-columns:1fr;gap:34px;text-align:left;}
+  .login-intro p{max-width:none;}
+}
+@media (max-width:520px){
+  .countdown-num{font-size:110px;}
+  .ballot-card-inner{padding:28px 22px 26px;}
+  .stub-divider::before,.stub-divider::after{display:none;}
+  .rank-row .rname{width:96px;font-size:12.5px;}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* =========================================================================
+   KONFIGURASI — wajib diisi sebelum di-deploy
+   Tempel URL Web App Google Apps Script kamu di sini (lihat PANDUAN-SETUP.md)
+   ========================================================================= */
+const API_URL = "TEMPEL_URL_WEB_APP_APPS_SCRIPT_DI_SINI";
+const SEKOLAH = "SMA Contoh";
+const TAHUN_AJARAN = "2026/2027";
+
+/* ============ API helpers (spreadsheet backend via Apps Script) ============ */
+function apiConfigured(){
+  return API_URL && API_URL.indexOf('TEMPEL_URL') === -1;
+}
+async function apiGet(params){
+  const qs = new URLSearchParams(params).toString();
+  const res = await fetch(API_URL + '?' + qs);
+  if(!res.ok) throw new Error('Gagal terhubung ke server (' + res.status + ')');
+  return res.json();
+}
+async function apiPost(payload){
+  const res = await fetch(API_URL, {
+    method:'POST',
+    headers:{'Content-Type':'text/plain;charset=utf-8'}, // text/plain menghindari CORS preflight di Apps Script
+    body: JSON.stringify(payload)
+  });
+  if(!res.ok) throw new Error('Gagal terhubung ke server (' + res.status + ')');
+  return res.json();
+}
+
+/* ============ app state ============ */
+const state = {
+  screen: apiConfigured() ? 'login' : 'setup',
+  role:'siswa',
+  user:null,          // {nisn, nama} untuk siswa, {nama} untuk guru
+  candidates:[],
+  openMisiNomor:null,
+  confirmCandidate:null,
+  submitting:false,
+  loginError:'',
+  netError:'',
+  voterCount:0,
+  totalSiswa:0,
+  countdownVal:5,
+  tally:null,
+  showRanking:false,
+  winner:null
+};
+
+function esc(s){
+  return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function seal(nomor){ return '<div class="seal">'+esc(nomor)+'</div>'; }
+function fallbackAvatar(nama){ return 'https://api.dicebear.com/7.x/initials/svg?seed='+encodeURIComponent(nama||'?'); }
+
+/* ============ render dispatcher ============ */
+const app = document.getElementById('app');
+
+function render(){
+  let html = '';
+  let stageClass = 'stage';
+  if(state.screen === 'setup') html = screenSetup();
+  else if(state.screen === 'login') html = screenLogin();
+  else if(state.screen === 'vote'){ html = screenVote(); stageClass += ' top'; }
+  else if(state.screen === 'thanks') html = screenThanks();
+  else if(state.screen === 'monitor') html = screenMonitor();
+  else if(state.screen === 'result') html = screenResult();
+
+  if(state.screen === 'setup' || state.screen === 'login'){
+    app.innerHTML = '<div class="shell"><div class="'+stageClass+'">'+html+'</div></div>';
+  } else {
+    app.innerHTML =
+      '<div class="shell">'+topbar()+'<div class="'+stageClass+'">'+
+      (state.netError ? '<div class="net-error">'+esc(state.netError)+'</div>' : '') +
+      html+'</div></div>';
+  }
+  if(state.screen === 'countdown'){
+    app.innerHTML += screenCountdown();
+  }
+  if(state.confirmCandidate){
+    app.innerHTML += modalConfirm(state.confirmCandidate);
+  }
+}
+
+function topbar(){
+  if(!state.user) return '';
+  const roleLabel = state.role === 'guru' ? 'Guru' : 'Siswa';
+  return `
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-mark">O</div>
+      <div class="brand-text">
+        <p class="school">${esc(SEKOLAH)}</p>
+        <p class="title">Pemilihan Ketua OSIS</p>
+      </div>
+    </div>
+    <div class="who">
+      <span>${roleLabel} · <span class="name">${esc(state.user.nama)}</span></span>
+      <button class="logout-btn" data-action="logout">Keluar</button>
+    </div>
+  </div>`;
+}
+
+/* ============ screen: setup ============ */
+function screenSetup(){
+  return `
+  <div class="setup-box">
+    <h2>Belum terhubung ke spreadsheet</h2>
+    <p>Situs ini butuh Google Spreadsheet sebagai basis data. Sebelum di-hosting, isi dulu <code>API_URL</code> di bagian atas file <code>index.html</code> dengan URL Web App Apps Script kamu.</p>
+    <ol>
+      <li>Buka Spreadsheet → Extensions → Apps Script → tempel isi <code>Code.gs</code></li>
+      <li>Deploy → New deployment → Web app → Execute as: Me, Access: Anyone</li>
+      <li>Salin URL deployment, tempel ke <code>API_URL</code> di index.html</li>
+    </ol>
+    <p>Lihat <code>PANDUAN-SETUP.md</code> untuk langkah lengkap.</p>
+  </div>`;
+}
+
+/* ============ screen: login ============ */
+function screenLogin(){
+  const isSiswa = state.role === 'siswa';
+  return `
+  <div class="login-wrap">
+    <div class="login-intro">
+      <div class="eyebrow-seal">O</div>
+      <h1>Pemilihan Ketua OSIS ${esc(SEKOLAH)}</h1>
+      <p>Tahun ajaran ${esc(TAHUN_AJARAN)}. Masuk untuk memberikan suaramu atau memantau jalannya pemilihan. Satu siswa hanya bisa memilih satu kali — tercatat otomatis di server.</p>
+    </div>
+    <div class="ballot-card">
+      <div class="ballot-card-inner">
+        <div class="role-tabs">
+          <button class="role-tab ${isSiswa?'active':''}" data-action="role" data-role="siswa">Siswa</button>
+          <button class="role-tab ${!isSiswa?'active':''}" data-action="role" data-role="guru">Guru</button>
+        </div>
+        ${state.loginError ? '<div class="form-error">'+esc(state.loginError)+'</div>' : ''}
+        ${isSiswa ? `
+        <div class="field">
+          <label for="in-nisn">Username (NISN)</label>
+          <input id="in-nisn" inputmode="numeric" autocomplete="username" placeholder="Contoh: 0051234567">
+        </div>
+        <div class="stub-divider"></div>
+        <div class="field">
+          <label for="in-pass">Password</label>
+          <input id="in-pass" type="password" inputmode="numeric" autocomplete="current-password" placeholder="Password kamu = NISN kamu">
+          <p class="hint">Password default adalah NISN kamu sendiri.</p>
+        </div>
+        ` : `
+        <div class="field">
+          <label for="in-nama">Nama</label>
+          <input id="in-nama" autocomplete="name" placeholder="Nama lengkap">
+        </div>
+        <div class="stub-divider"></div>
+        <div class="field">
+          <label for="in-pin">PIN panitia</label>
+          <input id="in-pin" type="password" inputmode="numeric" placeholder="PIN dari panitia pemilihan">
+        </div>
+        `}
+        <button class="submit-btn" data-action="login" ${state.submitting?'disabled':''}>${state.submitting?'Memeriksa…':'Masuk'}</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ============ screen: vote ============ */
+function screenVote(){
+  const cards = state.candidates.map(c => {
+    const open = state.openMisiNomor === c.nomor;
+    return `
+    <div class="candidate-card">
+      <div class="candidate-photo-wrap">
+        <img src="${esc(c.foto) || fallbackAvatar(c.nama)}" data-fallback="${esc(encodeURIComponent(c.nama))}" alt="Foto ${esc(c.nama)}">
+        ${seal(c.nomor)}
+      </div>
+      <div class="candidate-body">
+        <h3>${esc(c.nama)}</h3>
+        <p class="kelas">${esc(c.kelas)}</p>
+        <button class="misi-toggle" data-action="toggle-misi" data-nomor="${esc(c.nomor)}">${open?'Sembunyikan visi & misi':'Lihat visi & misi'}</button>
+        ${open ? `
+        <div class="misi-panel">
+          <p class="visi">"${esc(c.visi)}"</p>
+          <ul>${c.misi.map(m=>'<li>'+esc(m)+'</li>').join('')}</ul>
+        </div>` : ''}
+        <button class="pilih-btn" data-action="ask-vote" data-nomor="${esc(c.nomor)}">Pilih Kandidat Ini</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  return `
+  <div class="vote-head">
+    <h2>Pilih Ketua OSIS</h2>
+    <p>Tap "Pilih Kandidat Ini" pada kandidat pilihanmu. Kamu akan diminta konfirmasi sebelum suara dikirim.</p>
+  </div>
+  <div class="candidate-grid">${cards}</div>`;
+}
+
+/* ============ modal konfirmasi ============ */
+function modalConfirm(c){
+  return `
+  <div class="modal-overlay" data-action="close-modal">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <h3>Konfirmasi pilihan</h3>
+      <p>Kamu memilih Nomor ${esc(c.nomor)} — <strong>${esc(c.nama)}</strong>. Pilihan tidak bisa diubah setelah dikirim. Lanjutkan?</p>
+      <div class="modal-actions">
+        <button class="cancel" data-action="close-modal">Batal</button>
+        <button class="confirm" data-action="confirm-vote" ${state.submitting?'disabled':''}>${state.submitting?'Mengirim…':'Ya, kirim suara'}</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ============ screen: thanks ============ */
+function screenThanks(){
+  return `
+  <div class="thanks-box">
+    <div class="stamp-check">✓</div>
+    <h2>Suaramu sudah tercatat</h2>
+    <p>Terima kasih sudah berpartisipasi, ${esc(state.user.nama)}. Hasil akhir akan diumumkan panitia di halaman pemantauan.</p>
+    <button class="ghost-btn" data-action="goto-monitor">Lihat Halaman Pemantauan</button>
+  </div>`;
+}
+
+/* ============ screen: monitor ============ */
+function screenMonitor(){
+  const total = state.totalSiswa || 0;
+  const count = state.voterCount || 0;
+  const pct = total > 0 ? Math.min(1, count/total) : 0;
+  const r = 90, circ = 2*Math.PI*r;
+  const offset = circ * (1-pct);
+
+  const strip = state.candidates.map(c => `
+    <div class="strip-item">
+      <img src="${esc(c.foto) || fallbackAvatar(c.nama)}" data-fallback="${esc(encodeURIComponent(c.nama))}" alt="${esc(c.nama)}">
+      <div class="n">No. ${esc(c.nomor)}</div>
+    </div>`).join('');
+
+  return `
+  <div class="monitor-wrap">
+    <div class="monitor-panel">
+      <div class="ring-wrap">
+        <svg width="200" height="200" viewBox="0 0 200 200">
+          <circle class="ring-track" cx="100" cy="100" r="${r}"/>
+          <circle class="ring-fill" cx="100" cy="100" r="${r}" stroke-dasharray="${circ}" stroke-dashoffset="${offset}"/>
+        </svg>
+        <div class="ring-center">
+          <div class="count">${count}</div>
+          <div class="of">dari ${total} siswa</div>
+        </div>
+      </div>
+      <h2>Pemantauan Partisipasi</h2>
+      <p class="sub">Jumlah suara yang sudah masuk, diperbarui langsung dari server.</p>
+      <p class="strip-label">Kandidat yang bertarung</p>
+      <div class="candidate-strip">${strip}</div>
+      ${state.role === 'guru' ? `
+        <button class="final-btn" data-action="start-final" ${state.submitting?'disabled':''}>${state.submitting?'Memuat…':'Hitung Suara Akhir'}</button>
+        <p class="monitor-note">Tombol ini hanya untuk panitia. Hasil akan tampil setelah hitung mundur.</p>
+      ` : `
+        <p class="monitor-note">Hasil akhir akan diumumkan oleh panitia setelah proses hitung selesai.</p>
+      `}
+    </div>
+  </div>`;
+}
+
+/* ============ screen: countdown ============ */
+function screenCountdown(){
+  return `
+  <div class="countdown-screen">
+    <div class="countdown-label">MENGHITUNG SUARA</div>
+    <div class="countdown-num" key="${state.countdownVal}">${state.countdownVal > 0 ? state.countdownVal : '—'}</div>
+    <div class="countdown-sub">${state.countdownVal > 0 ? 'Bersiap…' : 'Menyiapkan hasil akhir…'}</div>
+  </div>`;
+}
+
+/* ============ screen: result ============ */
+function screenResult(){
+  const tally = state.tally || {};
+  const ranked = state.candidates
+    .map(c => ({...c, votes: tally[c.nomor] || 0}))
+    .sort((a,b)=> b.votes - a.votes);
+  const winner = ranked[0];
+  const maxVotes = winner ? Math.max(1, winner.votes) : 1;
+
+  const rankingHtml = state.showRanking ? `
+    <div class="rank-panel">
+      ${ranked.map((c,i)=>`
+        <div class="rank-row ${i===0?'winner':''}">
+          <div class="rn">${i+1}</div>
+          <div class="rname">${esc(c.nama)}</div>
+          <div class="rank-bar-track"><div class="rank-bar-fill" style="width:${(c.votes/maxVotes*100).toFixed(0)}%"></div></div>
+          <div class="rv">${c.votes} suara</div>
+        </div>
+      `).join('')}
+    </div>` : '';
+
+  if(!winner){
+    return `<div class="result-wrap"><p style="color:var(--paper)">Belum ada suara masuk.</p></div>`;
+  }
+
+  return `
+  <div class="result-wrap">
+    <div class="winner-halo">
+      <div class="halo-rays"></div>
+      <div class="winner-photo"><img src="${esc(winner.foto) || fallbackAvatar(winner.nama)}" data-fallback="${esc(encodeURIComponent(winner.nama))}" alt="${esc(winner.nama)}"></div>
+    </div>
+    <p class="tag">TERPILIH SEBAGAI KETUA OSIS</p>
+    <h1>${esc(winner.nama)}</h1>
+    <p class="kelas">${esc(winner.kelas)} · Nomor Urut ${esc(winner.nomor)}</p>
+    <div class="vote-count" id="vote-count-num">0<span class="label">suara diterima</span></div>
+    <div class="result-actions">
+      ${!state.showRanking ? '<button class="ghost-btn" data-action="see-others" style="border-color:rgba(255,255,255,0.4);color:#F1ECDD;">Lihat Suara Kandidat Lain</button>' : ''}
+    </div>
+    ${rankingHtml}
+    <button class="back-link" data-action="back-to-monitor">← Kembali ke pemantauan</button>
+  </div>`;
+}
+
+/* ============ actions ============ */
+async function handleLogin(){
+  state.loginError = '';
+  if(state.role === 'siswa'){
+    const nisn = document.getElementById('in-nisn').value.trim();
+    const pass = document.getElementById('in-pass').value.trim();
+    if(!nisn || !pass){ state.loginError = 'Isi username dan password terlebih dahulu.'; render(); return; }
+    state.submitting = true; render();
+    try{
+      const res = await apiPost({action:'loginSiswa', nisn, password: pass});
+      if(!res.ok){ state.loginError = res.error || 'Login gagal.'; state.submitting=false; render(); return; }
+      state.user = {nisn, nama: res.nama};
+      await afterSiswaLogin();
+    }catch(err){
+      state.loginError = 'Gagal terhubung ke server. Coba lagi.'; state.submitting=false; render();
+    }
+  } else {
+    const nama = document.getElementById('in-nama').value.trim();
+    const pin = document.getElementById('in-pin').value.trim();
+    if(!nama || !pin){ state.loginError = 'Isi nama dan PIN terlebih dahulu.'; render(); return; }
+    state.submitting = true; render();
+    try{
+      const res = await apiPost({action:'guruLogin', nama, pin});
+      if(!res.ok){ state.loginError = res.error || 'Login gagal.'; state.submitting=false; render(); return; }
+      state.user = {nama: res.nama};
+      await afterGuruLogin();
+    }catch(err){
+      state.loginError = 'Gagal terhubung ke server. Coba lagi.'; state.submitting=false; render();
+    }
+  }
+}
+
+async function afterSiswaLogin(){
+  state.submitting = true; render();
+  try{
+    const [cand, voted, voterCount, totalSiswa] = await Promise.all([
+      apiGet({action:'getCandidates'}),
+      apiGet({action:'checkVoted', nisn: state.user.nisn}),
+      apiGet({action:'getVoterCount'}),
+      apiGet({action:'getTotalSiswa'})
+    ]);
+    state.candidates = Array.isArray(cand) ? cand : [];
+    state.voterCount = voterCount.count || 0;
+    state.totalSiswa = totalSiswa.total || 0;
+    state.submitting = false;
+    state.screen = voted.voted ? 'monitor' : 'vote';
+  }catch(err){
+    state.netError = 'Gagal memuat data kandidat.'; state.submitting=false;
+  }
+  render();
+}
+
+async function afterGuruLogin(){
+  state.submitting = true; render();
+  try{
+    const [cand, voterCount, totalSiswa] = await Promise.all([
+      apiGet({action:'getCandidates'}),
+      apiGet({action:'getVoterCount'}),
+      apiGet({action:'getTotalSiswa'})
+    ]);
+    state.candidates = Array.isArray(cand) ? cand : [];
+    state.voterCount = voterCount.count || 0;
+    state.totalSiswa = totalSiswa.total || 0;
+    state.submitting = false;
+    state.screen = 'monitor';
+  }catch(err){
+    state.netError = 'Gagal memuat data.'; state.submitting=false;
+  }
+  render();
+}
+
+async function refreshMonitor(){
+  try{
+    const [voterCount, totalSiswa] = await Promise.all([
+      apiGet({action:'getVoterCount'}),
+      apiGet({action:'getTotalSiswa'})
+    ]);
+    state.voterCount = voterCount.count || 0;
+    state.totalSiswa = totalSiswa.total || 0;
+  }catch(err){ /* diamkan, biarkan angka lama tampil */ }
+  render();
+}
+
+async function submitVote(){
+  const c = state.confirmCandidate;
+  if(!c) return;
+  state.submitting = true; render();
+  try{
+    const res = await apiPost({action:'vote', nisn: state.user.nisn, nomor: c.nomor});
+    state.submitting = false;
+    state.confirmCandidate = null;
+    if(res.ok){
+      state.screen = 'thanks';
+    } else if(res.alreadyVoted){
+      state.screen = 'monitor';
+      await refreshMonitor();
+      return;
+    } else {
+      state.netError = res.error || 'Gagal mengirim suara.';
+    }
+  }catch(err){
+    state.submitting = false; state.confirmCandidate = null;
+    state.netError = 'Gagal terhubung ke server. Coba lagi.';
+  }
+  render();
+}
+
+function startFinalCount(){
+  state.screen = 'countdown';
+  state.countdownVal = 5;
+  render();
+  const tick = () => {
+    state.countdownVal -= 1;
+    render();
+    if(state.countdownVal > 0){
+      setTimeout(tick, 850);
+    } else {
+      setTimeout(loadTallyAndShowResult, 900);
+    }
+  };
+  setTimeout(tick, 850);
+}
+
+async function loadTallyAndShowResult(){
+  try{
+    const res = await apiGet({action:'getTally'});
+    state.tally = res.tally || {};
+  }catch(err){
+    state.tally = {};
+    state.netError = 'Gagal memuat rekap suara.';
+  }
+  state.showRanking = false;
+  state.screen = 'result';
+  render();
+  animateVoteCount();
+}
+
+function animateVoteCount(){
+  const tally = state.tally || {};
+  const ranked = state.candidates.map(c => ({...c, votes: tally[c.nomor]||0})).sort((a,b)=>b.votes-a.votes);
+  const target = ranked[0] ? ranked[0].votes : 0;
+  const el = document.getElementById('vote-count-num');
+  if(!el) return;
+  let cur = 0;
+  const step = Math.max(1, Math.ceil(target/30));
+  const iv = setInterval(()=>{
+    cur = Math.min(target, cur+step);
+    el.firstChild.textContent = cur;
+    if(cur >= target) clearInterval(iv);
+  }, 30);
+}
+
+/* ============ event delegation ============ */
+app.addEventListener('click', (e) => {
+  const t = e.target.closest('[data-action]');
+  if(!t) return;
+  const action = t.dataset.action;
+
+  if(action === 'role'){ state.role = t.dataset.role; state.loginError=''; render(); }
+  else if(action === 'login'){ handleLogin(); }
+  else if(action === 'logout'){
+    Object.assign(state, {screen:'login', role:'siswa', user:null, candidates:[], loginError:'', netError:'', confirmCandidate:null, tally:null, showRanking:false});
+    render();
+  }
+  else if(action === 'toggle-misi'){
+    const n = t.dataset.nomor;
+    state.openMisiNomor = state.openMisiNomor === n ? null : (state.candidates.find(c=>String(c.nomor)===String(n))||{}).nomor;
+    render();
+  }
+  else if(action === 'ask-vote'){
+    const n = t.dataset.nomor;
+    state.confirmCandidate = state.candidates.find(c=>String(c.nomor)===String(n));
+    render();
+  }
+  else if(action === 'close-modal'){ state.confirmCandidate = null; render(); }
+  else if(action === 'confirm-vote'){ submitVote(); }
+  else if(action === 'goto-monitor'){ state.screen='monitor'; refreshMonitor(); }
+  else if(action === 'start-final'){ startFinalCount(); }
+  else if(action === 'see-others'){ state.showRanking = true; render(); }
+  else if(action === 'back-to-monitor'){
+    state.screen='monitor'; state.showRanking=false; state.tally=null;
+    refreshMonitor();
+  }
+});
+
+app.addEventListener('error', (e) => {
+  const img = e.target;
+  if(img.tagName === 'IMG' && img.dataset.fallback && !img.dataset.fallbackApplied){
+    img.dataset.fallbackApplied = '1';
+    img.src = 'https://api.dicebear.com/7.x/initials/svg?seed=' + img.dataset.fallback;
+  }
+}, true);
+
+render();
+</script>
+</body>
+</html>

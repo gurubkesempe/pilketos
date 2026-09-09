@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+<base target="_top">
+<style>
+  body{font-family:'Google Sans',Roboto,Arial,sans-serif;padding:4px 6px;color:#182642;}
+  h3{margin:0 0 4px;font-size:16px;}
+  p.desc{font-size:12.5px;color:#57628A;margin:0 0 16px;line-height:1.5;}
+  label{display:block;font-size:12.5px;color:#57628A;margin:14px 0 6px;}
+  select,input[type=file]{width:100%;padding:8px;border:1px solid #D8D2C0;border-radius:4px;font-size:13.5px;box-sizing:border-box;}
+  .preview{margin-top:14px;width:100%;height:150px;border-radius:4px;background:#F1ECDD;border:1px solid #D8D2C0;
+    display:flex;align-items:center;justify-content:center;overflow:hidden;color:#9AA2BC;font-size:12.5px;}
+  .preview img{width:100%;height:100%;object-fit:cover;}
+  button{margin-top:18px;width:100%;padding:11px;border:none;border-radius:4px;background:#A23B34;color:#F6EFE4;
+    font-size:14px;font-weight:600;cursor:pointer;}
+  button:disabled{opacity:.55;cursor:default;}
+  .msg{margin-top:12px;font-size:12.5px;padding:9px 10px;border-radius:4px;display:none;}
+  .msg.ok{display:block;background:#E4EEE7;color:#2E4F3A;}
+  .msg.err{display:block;background:#F6E3E0;color:#8F332D;}
+  .hint{font-size:11.5px;color:#9AA2BC;margin-top:6px;}
+</style>
+</head>
+<body>
+  <h3>Upload Foto Kandidat</h3>
+  <p class="desc">Foto disimpan otomatis ke Google Drive dan link-nya langsung terisi di kolom Foto pada sheet Kandidat. Format JPG/PNG, maks 5 MB.</p>
+
+  <label for="nomorSelect">Kandidat</label>
+  <select id="nomorSelect"><option value="">Memuat daftar kandidat…</option></select>
+
+  <label for="fotoInput">Pilih foto</label>
+  <input type="file" id="fotoInput" accept="image/*">
+  <div class="hint">Foto akan otomatis di-crop menjadi persegi (4:3) di tampilan website.</div>
+
+  <div class="preview" id="preview">Belum ada foto dipilih</div>
+
+  <button id="uploadBtn" disabled>Upload &amp; Simpan</button>
+  <div class="msg" id="msg"></div>
+
+<script>
+  var selectedFile = null;
+
+  google.script.run.withSuccessHandler(fillDropdown).withFailureHandler(function(err){
+    showMsg('err', 'Gagal memuat daftar kandidat: ' + err.message);
+  }).getKandidatList();
+
+  function fillDropdown(list){
+    var sel = document.getElementById('nomorSelect');
+    if(!list || !list.length){
+      sel.innerHTML = '<option value="">Belum ada kandidat di sheet Kandidat</option>';
+      return;
+    }
+    sel.innerHTML = list.map(function(c){
+      return '<option value="'+c.nomor+'">No. '+c.nomor+' — '+c.nama+'</option>';
+    }).join('');
+    updateButtonState();
+  }
+
+  document.getElementById('fotoInput').addEventListener('change', function(e){
+    var file = e.target.files[0];
+    selectedFile = null;
+    if(!file) { renderPreview(null); updateButtonState(); return; }
+    if(!file.type.startsWith('image/')){
+      showMsg('err', 'File harus berupa gambar.');
+      e.target.value = '';
+      updateButtonState();
+      return;
+    }
+    if(file.size > 5 * 1024 * 1024){
+      showMsg('err', 'Ukuran file maksimal 5 MB.');
+      e.target.value = '';
+      updateButtonState();
+      return;
+    }
+    hideMsg();
+    selectedFile = file;
+    renderPreview(URL.createObjectURL(file));
+    updateButtonState();
+  });
+
+  function renderPreview(url){
+    var el = document.getElementById('preview');
+    el.innerHTML = url ? '<img src="'+url+'">' : 'Belum ada foto dipilih';
+  }
+
+  function updateButtonState(){
+    var nomor = document.getElementById('nomorSelect').value;
+    document.getElementById('uploadBtn').disabled = !(nomor && selectedFile);
+  }
+  document.getElementById('nomorSelect').addEventListener('change', updateButtonState);
+
+  document.getElementById('uploadBtn').addEventListener('click', function(){
+    var nomor = document.getElementById('nomorSelect').value;
+    if(!nomor || !selectedFile) return;
+
+    setLoading(true);
+    hideMsg();
+
+    var reader = new FileReader();
+    reader.onload = function(){
+      var base64 = reader.result.split(',')[1];
+      google.script.run
+        .withSuccessHandler(function(res){
+          setLoading(false);
+          if(res.ok){
+            showMsg('ok', 'Foto tersimpan. Kolom Foto sudah otomatis terisi.');
+          } else {
+            showMsg('err', res.error || 'Gagal menyimpan foto.');
+          }
+        })
+        .withFailureHandler(function(err){
+          setLoading(false);
+          showMsg('err', 'Gagal menyimpan foto: ' + err.message);
+        })
+        .saveFotoKandidat(nomor, base64, selectedFile.type, selectedFile.name);
+    };
+    reader.readAsDataURL(selectedFile);
+  });
+
+  function setLoading(loading){
+    var btn = document.getElementById('uploadBtn');
+    btn.disabled = loading;
+    btn.textContent = loading ? 'Mengunggah…' : 'Upload & Simpan';
+  }
+  function showMsg(type, text){
+    var el = document.getElementById('msg');
+    el.className = 'msg ' + type;
+    el.textContent = text;
+  }
+  function hideMsg(){
+    var el = document.getElementById('msg');
+    el.className = 'msg';
+    el.textContent = '';
+  }
+</script>
+</body>
+</html>
