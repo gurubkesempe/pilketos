@@ -267,6 +267,7 @@ function tabPemilih(){
       <p>${state.voterStats.total} pemilih terdaftar — ${state.voterStats.totalSiswa} siswa, ${state.voterStats.totalGuru} guru</p>
     </div>
     <div class="head-actions">
+      <button class="btn btn-outline" data-action="print-voter-cards" title="Mencetak sesuai hasil pencarian/filter yang sedang aktif">🖨 Cetak Kartu</button>
       <button class="btn btn-outline" data-action="open-import">⇪ Impor Massal</button>
       <button class="btn btn-primary" data-action="add-voter">+ Tambah Pemilih</button>
     </div>
@@ -699,6 +700,81 @@ async function confirmDeleteVoter(){
   }
 }
 
+/**
+ * Cetak kartu pemilih kecil (bukan satu halaman penuh per orang) — cocok
+ * dibagikan ke tiap siswa/guru berisi username & password login mereka
+ * (password selalu sama dengan ID/NISN/NIP-nya sendiri). Mencetak sesuai
+ * list yang diberikan (biasanya hasil filter/pencarian yang sedang aktif),
+ * supaya panitia bisa cetak per role atau per rentang ID kalau perlu.
+ */
+function printVoterCards(list){
+  if(!list || !list.length){ toast('Tidak ada data pemilih untuk dicetak. Coba ubah pencarian/filter.', 'err'); return; }
+
+  const win = window.open('', '_blank');
+  if(!win){ toast('Popup diblokir browser. Izinkan popup untuk situs ini lalu coba lagi.', 'err'); return; }
+
+  // Base absolute supaya logo tetap tampil walau dibuka di jendela baru (about:blank)
+  const logoUrl = new URL('assets/img/logo-smp2sragi.png', window.location.href).href;
+
+  const cardsHtml = list.map(v => `
+    <div class="card">
+      <div class="card-head">
+        <img src="${logoUrl}" alt="" onerror="this.style.display='none'">
+        <span class="card-school">${esc(SEKOLAH)}<br><b>Kartu Pemilih Pilketos</b></span>
+        <span class="card-role role-${v.role==='Guru'?'guru':'siswa'}">${esc(v.role)}</span>
+      </div>
+      <div class="card-name">${esc(v.nama)}</div>
+      <table class="card-cred">
+        <tr><td>Username</td><td>${esc(v.id)}</td></tr>
+        <tr><td>Password</td><td>${esc(v.id)}</td></tr>
+      </table>
+      <div class="card-foot">${esc(TAHUN_AJARAN)} · login di halaman pemilihan</div>
+    </div>`).join('');
+
+  const html = `<!DOCTYPE html>
+<html lang="id"><head><meta charset="UTF-8">
+<title>Kartu Pemilih — ${esc(SEKOLAH)}</title>
+<style>
+  @page{ size:A4; margin:9mm; }
+  *{ box-sizing:border-box; }
+  body{ font-family:Arial,Helvetica,sans-serif; margin:0; background:#fff; color:#14151F; }
+  .toolbar{ padding:16px; text-align:center; border-bottom:1px solid #e5e5e5; margin-bottom:14px; }
+  .toolbar button{ padding:11px 24px; border:none; border-radius:999px; background:#14151F; color:#fff; font-size:14px; font-weight:700; cursor:pointer; }
+  .toolbar p{ font-size:12.5px; color:#6B7280; margin:10px 0 0; }
+  .grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:3mm; padding:0 4mm; }
+  .card{
+    border:1px dashed #A7A7B0; border-radius:2.2mm; padding:2.6mm 3.2mm;
+    width:100%; height:30mm; display:flex; flex-direction:column; justify-content:space-between;
+    break-inside:avoid; page-break-inside:avoid;
+  }
+  .card-head{ display:flex; align-items:center; gap:1.6mm; }
+  .card-head img{ width:6mm; height:6mm; object-fit:contain; flex-shrink:0; }
+  .card-school{ font-size:5.6pt; line-height:1.25; color:#6B7280; text-transform:uppercase; letter-spacing:.02em; flex:1; }
+  .card-school b{ display:block; font-size:6.2pt; color:#14151F; text-transform:none; }
+  .card-role{ font-size:5.6pt; font-weight:700; padding:1mm 2mm; border-radius:999px; flex-shrink:0; }
+  .card-role.role-siswa{ background:#E3E9F5; color:#28407A; }
+  .card-role.role-guru{ background:#F1E4C9; color:#8A6710; }
+  .card-name{ font-size:9.5pt; font-weight:700; line-height:1.2; margin:1.4mm 0; }
+  .card-cred{ border-collapse:collapse; width:100%; }
+  .card-cred td{ font-size:8pt; padding:0.4mm 0; }
+  .card-cred td:first-child{ color:#6B7280; width:19mm; }
+  .card-cred td:last-child{ font-family:'Courier New',monospace; font-weight:700; letter-spacing:.02em; }
+  .card-foot{ font-size:5.4pt; color:#9CA3AF; text-align:right; }
+  @media print{ .toolbar{ display:none; } .grid{ padding:0; } }
+</style>
+</head><body>
+  <div class="toolbar">
+    <button onclick="window.print()">🖨 Cetak Sekarang</button>
+    <p>${list.length} kartu pemilih siap dicetak — 3 kartu per baris, potong mengikuti garis putus-putus.</p>
+  </div>
+  <div class="grid">${cardsHtml}</div>
+</body></html>`;
+
+  win.document.open();
+  win.document.write(html);
+  win.document.close();
+}
+
 function openImport(){ state.importOpen = true; state.importMode='file'; state.importText=''; state.importFileName=''; state.importResult=null; state.formError=''; render(); }
 function closeImport(){ state.importOpen = false; render(); }
 function setImportMode(mode){ state.importMode = mode; state.formError=''; render(); }
@@ -834,6 +910,7 @@ app.addEventListener('click', (e) => {
   else if(action === 'ask-delete-voter'){ askDeleteVoter(t.dataset.id); }
   else if(action === 'close-delete-voter-modal'){ state.deleteVoterTarget = null; render(); }
   else if(action === 'confirm-delete-voter'){ confirmDeleteVoter(); }
+  else if(action === 'print-voter-cards'){ printVoterCards(filteredVoters()); }
   else if(action === 'open-import'){ openImport(); }
   else if(action === 'close-import-modal'){ closeImport(); }
   else if(action === 'import-mode'){ setImportMode(t.dataset.mode); }
