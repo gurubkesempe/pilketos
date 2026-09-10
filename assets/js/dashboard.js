@@ -794,6 +794,21 @@ async function unpublish(){
 
 /* ============ event delegation (klik) ============ */
 app.addEventListener('click', (e) => {
+  // Klik pada modal-overlay hanya menutup modal kalau yang diklik
+  // adalah overlay itu sendiri (klik di luar kotak modal), bukan
+  // salah satu elemen di dalam modal-box (input, textarea, tombol, dll).
+  if(e.target.classList && e.target.classList.contains('modal-overlay')){
+    const overlayAction = e.target.dataset.action;
+    if(overlayAction){
+      if(overlayAction === 'close-candidate-modal') closeCandidateModal();
+      else if(overlayAction === 'close-delete-modal'){ state.deleteTarget = null; render(); }
+      else if(overlayAction === 'close-voter-modal') closeVoterModal();
+      else if(overlayAction === 'close-delete-voter-modal'){ state.deleteVoterTarget = null; render(); }
+      else if(overlayAction === 'close-import-modal') closeImport();
+    }
+    return;
+  }
+
   const t = e.target.closest('[data-action]');
   if(!t) return;
   const action = t.dataset.action;
