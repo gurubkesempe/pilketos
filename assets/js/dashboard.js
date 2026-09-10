@@ -794,23 +794,17 @@ async function unpublish(){
 
 /* ============ event delegation (klik) ============ */
 app.addEventListener('click', (e) => {
-  // Klik pada modal-overlay hanya menutup modal kalau yang diklik
-  // adalah overlay itu sendiri (klik di luar kotak modal), bukan
-  // salah satu elemen di dalam modal-box (input, textarea, tombol, dll).
-  if(e.target.classList && e.target.classList.contains('modal-overlay')){
-    const overlayAction = e.target.dataset.action;
-    if(overlayAction){
-      if(overlayAction === 'close-candidate-modal') closeCandidateModal();
-      else if(overlayAction === 'close-delete-modal'){ state.deleteTarget = null; render(); }
-      else if(overlayAction === 'close-voter-modal') closeVoterModal();
-      else if(overlayAction === 'close-delete-voter-modal'){ state.deleteVoterTarget = null; render(); }
-      else if(overlayAction === 'close-import-modal') closeImport();
-    }
-    return;
-  }
-
   const t = e.target.closest('[data-action]');
   if(!t) return;
+  // .modal-overlay punya data-action="close-*" untuk fitur "klik di luar
+  // modal untuk menutup". Tapi karena overlay adalah PEMBUNGKUS seluruh
+  // modal-box, closest() juga bisa "menemukan" data-action ini walau yang
+  // benar-benar diklik ada di DALAM modal-box (input, judul, dsb), karena
+  // elemen di dalam modal-box sendiri tidak punya data-action lalu
+  // pencarian naik terus sampai ke overlay. Maka: action milik overlay
+  // hanya dijalankan kalau elemen yang benar-benar diklik (e.target)
+  // ADALAH overlay itu sendiri, bukan salah satu anaknya.
+  if(t.classList.contains('modal-overlay') && e.target !== t) return;
   const action = t.dataset.action;
   if(action === 'download-template-csv' || action === 'download-template-xlsx' || action === 'import-mode') e.preventDefault();
 
