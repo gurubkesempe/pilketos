@@ -90,7 +90,7 @@ function topbar(){
   return `
   <div class="topbar light">
     <div class="brand">
-      <div class="brand-mark">P</div>
+      <div class="brand-mark"><img src="assets/img/logo-smp2sragi.png" alt="Logo SMP 2 Sragi"></div>
       <div class="brand-text">
         <p class="school">${esc(SEKOLAH)} · ${esc(TAHUN_AJARAN)}</p>
         <p class="title">Pemilihan Ketua OSIS</p>
@@ -122,7 +122,7 @@ function screenLogin(){
   return `
   <div class="login-wrap">
     <div class="login-intro">
-      <div class="eyebrow-seal">P</div>
+      <div class="eyebrow-seal"><img src="assets/img/logo-smp2sragi.png" alt="Logo SMP 2 Sragi"></div>
       <h1>Pemilihan Ketua OSIS ${esc(TAHUN_AJARAN)}</h1>
       <p>${esc(SEKOLAH)} — masuk dengan akun guru atau siswa kamu untuk memberikan suara. Satu orang, satu suara.</p>
       <div class="login-badges">

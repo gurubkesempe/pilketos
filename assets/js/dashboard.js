@@ -67,7 +67,7 @@ function topbar(){
   return `
   <div class="topbar dark">
     <div class="brand">
-      <div class="brand-mark">P</div>
+      <div class="brand-mark"><img src="assets/img/logo-smp2sragi.png" alt="Logo SMP 2 Sragi"></div>
       <div class="brand-text">
         <p class="school">${esc(SEKOLAH)} · ${esc(TAHUN_AJARAN)}</p>
         <p class="title">Dashboard Panitia Pilketos</p>
@@ -91,7 +91,7 @@ function screenLogin(){
   return `
   <div class="login-shell">
     <div class="admin-card">
-      <div class="eyebrow">P</div>
+      <div class="eyebrow"><img src="assets/img/logo-smp2sragi.png" alt="Logo SMP 2 Sragi"></div>
       <h1>Dashboard Panitia</h1>
       <p class="sub">Khusus panitia pemilihan ketua OSIS. Kelola pemilih, kandidat &amp; pantau jalannya suara.</p>
       ${state.loginError ? '<div class="form-error">'+esc(state.loginError)+'</div>' : ''}
