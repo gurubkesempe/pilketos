@@ -97,7 +97,7 @@ function topbar(){
       </div>
     </div>
     <div class="who">
-      <span><span class="role-pill">${esc(state.user.role||'Siswa')}</span><span class="name">${esc(state.user.nama)}</span></span>
+      <span><span class="role-pill">${esc(state.user.role||'Siswa')}</span><span class="name">${esc(state.user.nama)}${state.user.kelas ? ' · '+esc(state.user.kelas) : ''}</span></span>
       <button class="logout-btn" data-action="logout">Keluar</button>
     </div>
   </div>`;
@@ -391,7 +391,7 @@ async function handleLogin(){
   try{
     const res = await apiPost({action:'loginPemilih', id, password: pass});
     if(!res.ok){ state.loginError = res.error || 'Login gagal.'; state.submitting=false; render(); return; }
-    state.user = {id, nama: res.nama, role: res.role || 'Siswa'};
+    state.user = {id, nama: res.nama, role: res.role || 'Siswa', kelas: res.kelas || ''};
     await afterLogin();
   }catch(err){
     state.loginError = err.message || 'Gagal terhubung ke server. Coba lagi.'; state.submitting=false; render();

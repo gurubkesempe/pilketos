@@ -99,10 +99,10 @@ window.addEventListener('unhandledrejection', (e) => {
 
 /* ============ template impor massal pemilih (CSV & Excel) ============ */
 const TEMPLATE_ROWS = [
-  ['ID', 'Nama', 'Role'],
-  ['0051234567', 'Ahmad Fauzi', 'Siswa'],
-  ['0051234568', 'Siti Nur Aini', 'Siswa'],
-  ['198501012010011001', 'Budi Santoso', 'Guru']
+  ['ID', 'Nama', 'Kelas', 'Role'],
+  ['0051234567', 'Ahmad Fauzi', 'IX A', 'Siswa'],
+  ['0051234568', 'Siti Nur Aini', 'IX A', 'Siswa'],
+  ['198501012010011001', 'Budi Santoso', '', 'Guru']
 ];
 
 function downloadCsvTemplate(){
@@ -139,11 +139,11 @@ function parseCsvLines(text){
   if(lines.length && /^id\s*[,\t]/i.test(lines[0])) lines.shift(); // buang baris header kalau ada
   return lines.map(line => {
     const parts = line.split(/\t|,/).map(s=>s.trim());
-    return { id: parts[0]||'', nama: parts[1]||'', role: parts[2]||'Siswa' };
+    return { id: parts[0]||'', nama: parts[1]||'', kelas: parts[2]||'', role: parts[3]||'Siswa' };
   });
 }
 
-/** Baca file .xlsx/.xls jadi baris {id, nama, role} langsung di browser. */
+/** Baca file .xlsx/.xls jadi baris {id, nama, kelas, role} langsung di browser. */
 function parseXlsxFile(file){
   return new Promise((resolve, reject) => {
     if(typeof XLSX === 'undefined'){ reject(new Error('Pustaka Excel belum termuat.')); return; }
@@ -155,7 +155,7 @@ function parseXlsxFile(file){
         const rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
         const list = rows
           .filter(r => r.length && String(r[0]).trim() !== '' && !/^id$/i.test(String(r[0]).trim()))
-          .map(r => ({ id:String(r[0]||'').trim(), nama:String(r[1]||'').trim(), role:String(r[2]||'Siswa').trim() }));
+          .map(r => ({ id:String(r[0]||'').trim(), nama:String(r[1]||'').trim(), kelas:String(r[2]||'').trim(), role:String(r[3]||'Siswa').trim() }));
         resolve(list);
       }catch(err){ reject(new Error('Gagal membaca file Excel. Pastikan formatnya sesuai template.')); }
     };

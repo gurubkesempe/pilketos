@@ -234,12 +234,13 @@ function filteredVoters(){
 
 function voterRowsHtml(list){
   if(list.length === 0){
-    return `<tr><td colspan="5"><div class="empty-note" style="border:none;">Tidak ada pemilih yang cocok dengan pencarian/filter.</div></td></tr>`;
+    return `<tr><td colspan="6"><div class="empty-note" style="border:none;">Tidak ada pemilih yang cocok dengan pencarian/filter.</div></td></tr>`;
   }
   return list.map(v => `
     <tr>
       <td>${esc(v.id)}</td>
       <td><strong>${esc(v.nama)}</strong></td>
+      <td>${v.kelas ? esc(v.kelas) : '<span style="color:var(--ink-soft);">—</span>'}</td>
       <td><span class="badge ${v.role==='Guru'?'badge-guru':'badge-siswa'}">${esc(v.role)}</span></td>
       <td><span class="badge ${v.sudahMemilih?'badge-voted':'badge-notvoted'}">${v.sudahMemilih?'Sudah memilih':'Belum memilih'}</span></td>
       <td>
@@ -288,7 +289,7 @@ function tabPemilih(){
   </div>
   <div class="table-scroll">
   <table class="data-table">
-    <thead><tr><th>ID (NISN/NIP)</th><th>Nama</th><th>Role</th><th>Status</th><th></th></tr></thead>
+    <thead><tr><th>ID (NISN/NIP)</th><th>Nama</th><th>Kelas</th><th>Role</th><th>Status</th><th></th></tr></thead>
     <tbody id="voter-tbody">${voterRowsHtml(filtered)}</tbody>
   </table>
   </div>`;
@@ -317,7 +318,11 @@ function modalVoterForm(v){
         <label for="vf-nama">Nama lengkap</label>
         <input id="vf-nama" value="${esc(v.nama||'')}" placeholder="Nama pemilih">
       </div>
-      <p class="field-note">Password login pemilih otomatis sama dengan ID-nya sendiri.</p>
+      <div class="field">
+        <label for="vf-kelas">Kelas</label>
+        <input id="vf-kelas" value="${esc(v.kelas||'')}" placeholder="Contoh: IX A">
+      </div>
+      <p class="field-note">Kelas khusus untuk data siswa (wajib diisi kalau role Siswa) — boleh dikosongkan untuk Guru. Password login pemilih otomatis sama dengan ID-nya sendiri.</p>
       ${state.formError ? '<div class="form-error">'+esc(state.formError)+'</div>' : ''}
       <div class="modal-actions">
         <button class="cancel" data-action="close-voter-modal">Batal</button>
@@ -360,12 +365,12 @@ function modalImport(){
         <a class="template-link" href="#" data-action="download-template-csv">⬇ Template CSV kosong</a>
         <a class="template-link" href="#" data-action="download-template-xlsx">⬇ Template Excel (.xlsx) kosong</a>
       </div>
-      <p class="field-note" style="margin-top:10px;">Format kolom: <code>ID, Nama, Role</code> (Role boleh dikosongkan, default Siswa). Isi template, simpan, lalu upload lagi di sini — tidak perlu diketik ulang satu-satu. Baris pertama boleh header, otomatis dilewati.</p>
+      <p class="field-note" style="margin-top:10px;">Format kolom: <code>ID, Nama, Kelas, Role</code> (Kelas wajib untuk Siswa, boleh dikosongkan untuk Guru; Role boleh dikosongkan, default Siswa). Isi template, simpan, lalu upload lagi di sini — tidak perlu diketik ulang satu-satu. Baris pertama boleh header, otomatis dilewati.</p>
       ` : `
       <p style="font-size:13.5px;color:var(--ink-soft);line-height:1.6;margin:0 0 14px;">
-        Satu baris = satu pemilih, format: <code>ID,Nama,Role</code>. Bisa langsung tempel dari kolom spreadsheet.
+        Satu baris = satu pemilih, format: <code>ID,Nama,Kelas,Role</code>. Bisa langsung tempel dari kolom spreadsheet.
       </p>
-      <textarea id="import-text" placeholder="0051234567,Ahmad Fauzi,Siswa&#10;198501012010011001,Budi Santoso,Guru">${esc(state.importText)}</textarea>
+      <textarea id="import-text" placeholder="0051234567,Ahmad Fauzi,IX A,Siswa&#10;198501012010011001,Budi Santoso,,Guru">${esc(state.importText)}</textarea>
       `}
 
       ${state.formError ? '<div class="form-error" style="margin-top:14px;">'+esc(state.formError)+'</div>' : ''}
@@ -660,11 +665,13 @@ async function saveVoter(){
   const id = document.getElementById('vf-id').value.trim();
   const nama = document.getElementById('vf-nama').value.trim();
   const role = document.getElementById('vf-role').value;
+  const kelas = document.getElementById('vf-kelas').value.trim();
   if(!id || !nama){ state.formError = 'ID dan nama wajib diisi.'; render(); return; }
+  if(role === 'Siswa' && !kelas){ state.formError = 'Kelas wajib diisi untuk pemilih dengan role Siswa.'; render(); return; }
 
   state.submitting = true; render();
   try{
-    const res = await apiPost({action:'saveVoter', id, nama, role});
+    const res = await apiPost({action:'saveVoter', id, nama, kelas, role});
     state.submitting = false;
     if(!res.ok){ state.formError = res.error || 'Gagal menyimpan pemilih.'; render(); return; }
     state.editingVoter = null;
@@ -723,7 +730,7 @@ function printVoterCards(list){
         <span class="card-school">${esc(SEKOLAH)}<br><b>Kartu Pemilih Pilketos</b></span>
         <span class="card-role role-${v.role==='Guru'?'guru':'siswa'}">${esc(v.role)}</span>
       </div>
-      <div class="card-name">${esc(v.nama)}</div>
+      <div class="card-name">${esc(v.nama)}${v.kelas ? ' <span class="card-kelas">· '+esc(v.kelas)+'</span>' : ''}</div>
       <table class="card-cred">
         <tr><td>Username</td><td>${esc(v.id)}</td></tr>
         <tr><td>Password</td><td>${esc(v.id)}</td></tr>
@@ -755,6 +762,7 @@ function printVoterCards(list){
   .card-role.role-siswa{ background:#E3E9F5; color:#28407A; }
   .card-role.role-guru{ background:#F1E4C9; color:#8A6710; }
   .card-name{ font-size:9.5pt; font-weight:700; line-height:1.2; margin:1.4mm 0; }
+  .card-kelas{ font-size:7pt; font-weight:500; color:#6B7280; }
   .card-cred{ border-collapse:collapse; width:100%; }
   .card-cred td{ font-size:8pt; padding:0.4mm 0; }
   .card-cred td:first-child{ color:#6B7280; width:19mm; }
@@ -785,7 +793,7 @@ function handleImportFile(file){
   const isXlsx = /\.xlsx?$/i.test(file.name);
   if(isXlsx){
     parseXlsxFile(file)
-      .then(list => { state.importText = list.map(r => [r.id, r.nama, r.role].join(',')).join('\n'); render(); })
+      .then(list => { state.importText = list.map(r => [r.id, r.nama, r.kelas||'', r.role].join(',')).join('\n'); render(); })
       .catch(err => { state.formError = err.message; render(); });
     return;
   }
