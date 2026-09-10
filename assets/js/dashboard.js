@@ -594,15 +594,19 @@ async function saveCandidate(){
   const misi = document.getElementById('cf-misi').value.split('\n').map(s=>s.trim()).filter(Boolean);
   if(!nomor || !kelas || !nama){ state.formError = 'Nomor, nama, dan kelas wajib diisi.'; render(); return; }
 
-  const fotoInput = document.getElementById('cf-foto');
-  const file = fotoInput.files && fotoInput.files[0];
-
   state.submitting = true; render();
   try{
-    let photo = null;
-    if(file) photo = await readPhotoFile(file);
     const payload = {action:'saveCandidate', nomor, kelas, nama, visi, misi};
-    if(photo){ payload.foto = photo.base64; payload.fotoType = photo.type; payload.fotoName = photo.name; }
+    // PENTING: jangan baca ulang document.getElementById('cf-foto').files di sini.
+    // Foto sudah dibaca & disimpan ke state.photoBase64 saat file dipilih
+    // (lihat listener 'change' untuk #cf-foto). Setiap kali modal di-render
+    // ulang (mis. setelah memilih foto), seluruh HTML modal dibuat ulang
+    // lewat innerHTML, sehingga elemen <input type="file"> yang lama
+    // (yang menyimpan file terpilih) diganti dengan elemen baru yang
+    // filesnya selalu kosong — file yang tadi dipilih user tidak bisa
+    // "dipindahkan" ke input baru tsb oleh browser. Makanya harus pakai
+    // state.photoBase64 yang sudah tersimpan, bukan file input-nya lagi.
+    if(state.photoBase64){ payload.foto = state.photoBase64; payload.fotoType = state.photoType; payload.fotoName = state.photoName; }
     const res = await apiPost(payload);
     state.submitting = false;
     if(!res.ok){ state.formError = res.error || 'Gagal menyimpan kandidat.'; render(); return; }
