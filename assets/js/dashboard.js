@@ -114,14 +114,36 @@ function screenLogin(){
  * Tes koneksi API_URL secara langsung, untuk membedakan "tombol tidak
  * berfungsi karena bug" vs "backend belum ter-deploy dengan benar" — sebab
  * paling umum kalau dashboard terasa tidak merespons sama sekali.
+ * Menguji GET dan POST terpisah karena keduanya bisa gagal dengan sebab
+ * berbeda (contoh nyata: GET berhasil tapi POST membalas "Aksi tidak
+ * dikenal: undefined" — biasanya berarti API_URL di common.js sudah usang,
+ * menunjuk ke deployment lama yang berbeda dari deployment aktif kamu).
  */
 async function runDiagnostic(){
   state.diagRunning = true; state.diagResult = null; render();
+
+  let getOk = false, getMsg = '';
   try{
-    const res = await apiGet({action:'getResultStatus'});
-    state.diagResult = { ok:true, message: 'Terhubung ke server dengan baik. Kalau tombol lain masih terasa tidak berfungsi, coba muat ulang halaman ini.' };
-  }catch(err){
-    state.diagResult = { ok:false, message: err.message || 'Gagal terhubung ke server.' };
+    const res = await apiGet({action:'ping'});
+    getOk = !!res.ok;
+    if(!getOk) getMsg = 'Server merespons tapi format tidak dikenali.';
+  }catch(err){ getMsg = err.message || 'Gagal terhubung.'; }
+
+  let postOk = false, postMsg = '';
+  try{
+    const res = await apiPost({action:'ping'});
+    postOk = !!res.ok;
+    if(!postOk) postMsg = res.error || 'Server merespons tapi tidak pakai format yang diharapkan.';
+  }catch(err){ postMsg = err.message || 'Gagal terhubung.'; }
+
+  if(getOk && postOk){
+    state.diagResult = { ok:true, message: 'Terhubung ke server dengan baik (GET & POST). Kalau tombol lain masih terasa tidak berfungsi, coba muat ulang halaman ini.' };
+  } else if(getOk && !postOk){
+    state.diagResult = { ok:false, message: 'GET ke server berhasil, tapi POST gagal (' + postMsg + '). Ini biasanya berarti: (1) API_URL di common.js menunjuk ke deployment LAMA yang sudah tidak dipakai — periksa Deploy > Manage deployments, pastikan URL-nya sama persis dengan yang di common.js; atau (2) Code.gs belum di-deploy ulang sebagai versi baru setelah diubah (Manage deployments > pensil > New version > Deploy, bukan cuma Save).' };
+  } else if(!getOk && postOk){
+    state.diagResult = { ok:false, message: 'POST berhasil tapi GET gagal (' + getMsg + '). Coba muat ulang halaman, atau periksa API_URL di common.js.' };
+  } else {
+    state.diagResult = { ok:false, message: getMsg || 'Gagal terhubung ke server.' };
   }
   state.diagRunning = false; render();
 }
