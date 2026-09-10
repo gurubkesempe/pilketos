@@ -2,11 +2,14 @@
    INDEX.CSS — khusus halaman pemilih (index.html)
    ========================================================================= */
 
+/* Latar layar login/setup: foto gedung sekolah yang sama dipakai di
+   seluruh aplikasi, ditutup gradasi gelap supaya kartu surat suara &
+   teks putih di atasnya tetap terbaca jelas. */
 body.on-hero{
   background:
-    radial-gradient(1000px 600px at 10% -10%, #3A2C1C 0%, transparent 60%),
-    radial-gradient(1000px 640px at 100% 0%, #1E2A22 0%, transparent 55%),
-    var(--ink);
+    linear-gradient(180deg, rgba(20,16,11,.86) 0%, rgba(20,16,11,.72) 45%, rgba(20,16,11,.82) 100%),
+    url('../img/bg-sekolah.jpg') center 25% / cover no-repeat;
+  background-color:var(--bg-app);
 }
 /* Latar layar pemilihan/pemantauan: foto gedung sekolah, ditutup gradasi
    gelap supaya teks & kartu putih di atasnya tetap terbaca jelas. */
@@ -35,11 +38,11 @@ body.on-app{
 .login-wrap{width:100%;max-width:1080px;display:grid;grid-template-columns:1.05fr 1fr;gap:56px;align-items:center;}
 .login-intro{color:var(--paper);}
 .login-intro .eyebrow-seal{
-  width:58px;height:58px;border-radius:50%;border:2px solid var(--brass-soft);position:relative;
+  width:64px;height:64px;
   display:flex;align-items:center;justify-content:center;margin-bottom:26px;
-  font-family:'Fraunces',serif;font-size:23px;font-weight:700;color:var(--brass-soft);
+  filter:drop-shadow(0 6px 14px rgba(0,0,0,.35));
 }
-.login-intro .eyebrow-seal::after{content:"";position:absolute;inset:4px;border:1px solid var(--brass-soft);border-radius:50%;opacity:.6;}
+.login-intro .eyebrow-seal img{width:100%;height:100%;object-fit:contain;display:block;}
 .login-intro h1{font-size:clamp(32px,4vw,45px);line-height:1.12;font-weight:600;margin:0 0 16px;font-style:italic;}
 .login-intro p{color:#D8CFB9;font-size:15.5px;line-height:1.65;max-width:38ch;margin:0 0 26px;font-family:'Fraunces',serif;}
 .login-badges{display:flex;gap:0;flex-wrap:wrap;border-top:1px solid rgba(252,249,240,0.18);padding-top:16px;}

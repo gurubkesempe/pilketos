@@ -37,6 +37,7 @@ body{
   font-family:'Inter', sans-serif;
   min-height:100vh;
   -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
 }
 h1,h2,h3,.serif{font-family:'Fraunces', serif; letter-spacing:-0.01em; font-weight:600;}
 button{font-family:inherit;cursor:pointer;}
@@ -55,8 +56,8 @@ code{font-family:ui-monospace,monospace;}
 }
 .stub-perforation{position:relative;height:1px;border-top:1.5px dashed var(--paper-line);margin:22px 0 20px;}
 .stub-perforation::before,.stub-perforation::after{content:"";position:absolute;top:-6px;width:12px;height:12px;border-radius:50%;background:var(--bg-app);}
-.stub-perforation::before{left:-30px;}
-.stub-perforation::after{right:-30px;}
+.stub-perforation::before{left:-14px;}
+.stub-perforation::after{right:-14px;}
 
 /* ---------- ink stamp (nomor / status / seal) ---------- */
 .stamp{
@@ -97,14 +98,10 @@ code{font-family:ui-monospace,monospace;}
 .topbar.light{background:var(--paper);border-bottom:1px solid var(--paper-line);}
 .brand{display:flex;align-items:center;gap:13px;}
 .brand-mark{
-  width:38px;height:38px;flex-shrink:0;border-radius:50%;
-  background:transparent;border:2px solid var(--brass-soft);
-  display:flex;align-items:center;justify-content:center;position:relative;
-  font-family:'Fraunces',serif;font-size:16px;font-weight:700;color:var(--brass-soft);
+  width:40px;height:40px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
 }
-.brand-mark::after{content:"";position:absolute;inset:3px;border:1px solid var(--brass-soft);border-radius:50%;opacity:.6;}
-.topbar.light .brand-mark{border-color:var(--brass);color:var(--brass);}
-.topbar.light .brand-mark::after{border-color:var(--brass);}
+.brand-mark img{width:100%;height:100%;object-fit:contain;display:block;}
 .brand-text .school{font-size:11.5px;letter-spacing:.03em;margin:0;opacity:.65;}
 .brand-text .title{font-size:15.5px;margin:2px 0 0;font-weight:600;font-family:'Fraunces',serif;}
 .topbar .who{display:flex;align-items:center;gap:14px;font-size:13.5px;}

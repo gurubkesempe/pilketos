@@ -13,8 +13,8 @@ body.on-login{
 .login-shell{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
 .admin-card{width:100%;max-width:400px;background:var(--paper);border-radius:var(--radius);box-shadow:var(--shadow);padding:38px 34px;border-top:4px solid var(--ink);position:relative;}
 .admin-card::before{content:"AKSES PANITIA";position:absolute;top:-11px;left:34px;background:var(--ink);color:var(--brass-soft);font-size:10.5px;letter-spacing:.08em;padding:3px 12px;border-radius:2px;}
-.admin-card .eyebrow{width:52px;height:52px;border-radius:50%;border:2px solid var(--brass);position:relative;display:flex;align-items:center;justify-content:center;margin-bottom:20px;font-family:'Fraunces',serif;font-size:21px;font-weight:700;color:var(--brass);}
-.admin-card .eyebrow::after{content:"";position:absolute;inset:3px;border:1px solid var(--brass);border-radius:50%;opacity:.6;}
+.admin-card .eyebrow{width:56px;height:56px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;}
+.admin-card .eyebrow img{width:100%;height:100%;object-fit:contain;display:block;}
 .admin-card h1{font-size:23px;margin:0 0 6px;}
 .admin-card p.sub{font-size:13.5px;color:var(--ink-soft);margin:0 0 26px;line-height:1.5;}
 .admin-card .submit-btn{width:100%;padding:14px;border:none;border-radius:var(--radius-pill);background:var(--ink);color:var(--paper);font-size:14.5px;font-weight:700;margin-top:6px;transition:background .15s;}
