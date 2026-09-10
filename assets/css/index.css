@@ -13,23 +13,23 @@ body.on-hero{
 body.on-app{
   background:
     linear-gradient(180deg, rgba(20,16,11,.80) 0%, rgba(20,16,11,.55) 32%, rgba(20,16,11,.62) 100%),
-    url('img/bg-sekolah.jpg') center 30% / cover no-repeat;
+    url('../img/bg-sekolah.jpg') center 30% / cover no-repeat;
   background-color:var(--bg-app);
 }
 
 .shell{min-height:100vh;display:flex;flex-direction:column;}
-.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:24px clamp(16px,4vw,48px) 56px;}
-.stage.top{align-items:flex-start;}
+.stage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px clamp(16px,4vw,48px) 56px;}
+.stage.top{justify-content:flex-start;}
 
 /* ---------- vote head: panel kaca buram di atas foto latar ---------- */
 .vote-head{
-  width:100%;max-width:1080px;margin:0 auto 28px;
+  width:100%;max-width:1080px;margin:0 auto 20px;
   background:rgba(20,16,11,.5);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
   border:1px solid rgba(252,249,240,.14);border-radius:var(--radius);
-  padding:20px 26px;
+  padding:16px 24px;
 }
-.vote-head h2{font-size:28px;margin:0 0 6px;font-weight:600;color:var(--paper);}
-.vote-head p{color:#D8CFB9;font-size:14.5px;margin:0;line-height:1.55;}
+.vote-head h2{font-size:23px;margin:0 0 4px;font-weight:600;color:var(--paper);}
+.vote-head p{color:#D8CFB9;font-size:13.5px;margin:0;line-height:1.5;max-width:72ch;}
 
 /* ---------- login ---------- */
 .login-wrap{width:100%;max-width:1080px;display:grid;grid-template-columns:1.05fr 1fr;gap:56px;align-items:center;}
