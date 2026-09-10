@@ -450,7 +450,7 @@ function screenCountdown(){
   return `
   <div class="countdown-screen">
     <div class="countdown-label">Mengungkap Ketua OSIS Terpilih</div>
-    <div class="countdown-num">${v > 0 ? v : '✦'}</div>
+    <div class="countdown-num">${v > 0 ? v : '<img src="assets/img/esperogi-logo.png" alt="Esperogi Level Up!" class="countdown-logo">'}</div>
     <div class="countdown-sub">${v > 0 ? 'Bersiap…' : 'Mengumumkan hasil…'}</div>
   </div>`;
 }
