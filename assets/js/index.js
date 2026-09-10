@@ -23,8 +23,19 @@ const state = {
   tally:null,
   revealDone:false,
   countdownVal:null,
-  pollHandle:null
+  pollHandle:null,
+  zoomPhoto:null
 };
+
+/* ============ zoom foto kandidat (lightbox) ============
+   Variabel-variabel ini SENGAJA disimpan di luar `state` dan dimanipulasi
+   langsung ke elemen DOM (bukan lewat render()), supaya drag/scroll untuk
+   zoom terasa halus — kalau lewat render() setiap gerakan mouse, seluruh
+   #app akan ditulis ulang dan elemen foto yang sedang di-drag akan hilang
+   di tengah jalan. */
+let zoomScale = 1, zoomX = 0, zoomY = 0;
+let zoomDrag = { active:false, startX:0, startY:0, origX:0, origY:0 };
+let pinchStartDist = null, pinchStartScale = 1;
 
 const app = document.getElementById('app');
 
@@ -49,6 +60,7 @@ function render(){
       html+'</div></div>';
   }
   if(state.confirmCandidate){ app.innerHTML += modalConfirm(state.confirmCandidate); }
+  if(state.zoomPhoto){ app.innerHTML += modalPhotoZoom(state.zoomPhoto); }
   if(state.countdownVal !== null){ app.innerHTML += screenCountdown(); }
 }
 
@@ -140,15 +152,24 @@ function candidateAvatarImg(c){
   return `<img src="${esc(c.foto) || fallbackAvatar(c.nama)}" data-fallback="${esc(encodeURIComponent(c.nama))}" alt="Foto ${esc(c.nama)}">`;
 }
 
+/* Foto kandidat versi kartu besar (dipakai di grid pemilihan), bisa diklik
+   untuk membuka lightbox zoom. */
+function candidatePhotoCard(c){
+  const src = esc(c.foto) || fallbackAvatar(c.nama);
+  return `
+  <div class="candidate-photo-wrap" data-action="zoom-photo" data-nomor="${esc(c.nomor)}" role="button" tabindex="0" aria-label="Perbesar foto ${esc(c.nama)}">
+    <img class="candidate-photo" src="${src}" data-fallback="${esc(encodeURIComponent(c.nama))}" alt="Foto ${esc(c.nama)}">
+    <span class="photo-zoom-hint">🔍 Perbesar</span>
+  </div>`;
+}
+
 function screenVote(){
   const cards = state.candidates.map(c => {
     const open = state.openMisiNomor === c.nomor;
     return `
     <div class="candidate-card">
+      ${candidatePhotoCard(c)}
       <div class="candidate-nomor-stamp stamp">${esc(c.nomor)}</div>
-      <div class="candidate-avatar-wrap">
-        <div class="avatar-circle candidate-avatar">${candidateAvatarImg(c)}</div>
-      </div>
       <div class="candidate-body">
         <h3>${esc(c.nama)}</h3>
         <p class="kelas">${esc(c.kelas)}</p>
@@ -166,9 +187,102 @@ function screenVote(){
   return `
   <div class="vote-head">
     <h2>Pilih Ketua OSIS</h2>
-    <p>Tap "Pilih Kandidat Ini" pada kandidat pilihanmu. Kamu akan diminta konfirmasi sebelum suara dikirim.</p>
+    <p>Tap "Pilih Kandidat Ini" pada kandidat pilihanmu. Kamu akan diminta konfirmasi sebelum suara dikirim. Tap fotonya untuk melihat lebih besar &amp; bisa di-zoom.</p>
   </div>
   <div class="candidate-grid">${cards}</div>`;
+}
+
+/* ============ lightbox: zoom foto kandidat ============ */
+function modalPhotoZoom(p){
+  return `
+  <div class="modal-overlay photo-zoom-overlay" data-action="close-zoom">
+    <div class="photo-zoom-box">
+      <div class="photo-zoom-head">
+        <div>
+          <h3>${esc(p.nama)}</h3>
+          ${p.kelas ? '<p>'+esc(p.kelas)+'</p>' : ''}
+        </div>
+        <button class="zoom-close-btn" data-action="close-zoom" aria-label="Tutup">✕</button>
+      </div>
+      <div class="photo-zoom-stage" id="zoom-stage">
+        <img id="zoom-img" src="${esc(p.src)}" alt="Foto ${esc(p.nama)}" draggable="false">
+      </div>
+      <div class="photo-zoom-controls">
+        <button class="zoom-btn" data-action="zoom-out" aria-label="Perkecil">−</button>
+        <button class="zoom-btn zoom-reset-btn" data-action="zoom-reset">Reset</button>
+        <button class="zoom-btn" data-action="zoom-in" aria-label="Perbesar">+</button>
+        <span class="zoom-hint-text">Scroll / cubit dua jari untuk zoom, seret untuk geser</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+function openZoom(nomor){
+  const c = state.candidates.find(x => String(x.nomor) === String(nomor));
+  if(!c) return;
+  state.zoomPhoto = { src: c.foto || fallbackAvatar(c.nama), nama: c.nama, kelas: c.kelas };
+  render();
+  zoomScale = 1; zoomX = 0; zoomY = 0;
+  requestAnimationFrame(bindZoomInteractions);
+}
+function closeZoom(){ state.zoomPhoto = null; render(); }
+
+function applyZoomTransform(){
+  const img = document.getElementById('zoom-img');
+  if(!img) return;
+  zoomScale = Math.min(4, Math.max(1, zoomScale));
+  if(zoomScale === 1){ zoomX = 0; zoomY = 0; }
+  img.style.transform = `translate(${zoomX}px, ${zoomY}px) scale(${zoomScale})`;
+  img.style.cursor = zoomScale > 1 ? 'grab' : 'zoom-in';
+}
+function setZoom(next){ zoomScale = next; applyZoomTransform(); }
+
+function bindZoomInteractions(){
+  const stage = document.getElementById('zoom-stage');
+  const img = document.getElementById('zoom-img');
+  if(!stage || !img) return;
+  applyZoomTransform();
+
+  stage.onwheel = (e) => {
+    e.preventDefault();
+    setZoom(zoomScale + (e.deltaY < 0 ? 0.3 : -0.3));
+  };
+
+  img.ondblclick = () => {
+    zoomScale = zoomScale > 1 ? 1 : 2.4;
+    applyZoomTransform();
+  };
+
+  img.onpointerdown = (e) => {
+    if(zoomScale <= 1) return;
+    img.setPointerCapture(e.pointerId);
+    zoomDrag = { active:true, startX:e.clientX, startY:e.clientY, origX:zoomX, origY:zoomY };
+    img.style.cursor = 'grabbing';
+  };
+  img.onpointermove = (e) => {
+    if(!zoomDrag.active) return;
+    zoomX = zoomDrag.origX + (e.clientX - zoomDrag.startX);
+    zoomY = zoomDrag.origY + (e.clientY - zoomDrag.startY);
+    img.style.transform = `translate(${zoomX}px, ${zoomY}px) scale(${zoomScale})`;
+  };
+  img.onpointerup = img.onpointercancel = () => {
+    zoomDrag.active = false;
+    img.style.cursor = zoomScale > 1 ? 'grab' : 'zoom-in';
+  };
+
+  /* cubit dua jari (pinch) di layar sentuh */
+  pinchStartDist = null;
+  stage.ontouchmove = (e) => {
+    if(e.touches.length === 2){
+      e.preventDefault();
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      const dist = Math.hypot(dx, dy);
+      if(pinchStartDist == null){ pinchStartDist = dist; pinchStartScale = zoomScale; }
+      else setZoom(pinchStartScale * (dist / pinchStartDist));
+    }
+  };
+  stage.ontouchend = (e) => { if(e.touches.length < 2) pinchStartDist = null; };
 }
 
 function modalConfirm(c){
@@ -372,6 +486,13 @@ async function submitVote(){
 app.addEventListener('click', (e) => {
   const t = e.target.closest('[data-action]');
   if(!t) return;
+  // .modal-overlay punya data-action="close-*" untuk klik-di-luar-menutup.
+  // Karena overlay membungkus seluruh isi modal, closest() bisa ikut
+  // "menemukan" data-action itu walau yang diklik sebenarnya ada di DALAM
+  // kotak modal (teks, tombol lain, dll). Maka action milik overlay hanya
+  // dijalankan kalau elemen yang benar-benar diklik adalah overlay itu
+  // sendiri, bukan salah satu anaknya.
+  if(t.classList.contains('modal-overlay') && e.target !== t) return;
   const action = t.dataset.action;
 
   if(action === 'login'){ handleLogin(); }
@@ -393,6 +514,23 @@ app.addEventListener('click', (e) => {
   else if(action === 'close-modal'){ state.confirmCandidate = null; render(); }
   else if(action === 'confirm-vote'){ submitVote(); }
   else if(action === 'goto-monitor'){ state.screen='monitor'; refreshMonitor(); }
+  else if(action === 'zoom-photo'){ openZoom(t.dataset.nomor); }
+  else if(action === 'close-zoom'){ closeZoom(); }
+  else if(action === 'zoom-in'){ setZoom(zoomScale + 0.4); }
+  else if(action === 'zoom-out'){ setZoom(zoomScale - 0.4); }
+  else if(action === 'zoom-reset'){ zoomScale = 1; zoomX = 0; zoomY = 0; applyZoomTransform(); }
+});
+
+/* Enter/Space untuk membuka zoom saat elemen foto difokus via keyboard,
+   dan Escape untuk menutup lightbox yang sedang terbuka. */
+app.addEventListener('keydown', (e) => {
+  if((e.key === 'Enter' || e.key === ' ') && e.target.dataset && e.target.dataset.action === 'zoom-photo'){
+    e.preventDefault();
+    openZoom(e.target.dataset.nomor);
+  }
+});
+document.addEventListener('keydown', (e) => {
+  if(e.key === 'Escape' && state.zoomPhoto) closeZoom();
 });
 
 document.addEventListener('error', (e) => {
