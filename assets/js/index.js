@@ -305,7 +305,6 @@ function screenThanks(){
     <div class="stamp-check">✓</div>
     <h2>Suaramu sudah tercatat</h2>
     <p>Terima kasih sudah berpartisipasi, ${esc(state.user.nama)}. Hasil akhir akan diumumkan panitia di halaman ini begitu proses pemilihan selesai.</p>
-    <button class="ghost-btn" data-action="goto-monitor">Lihat Pemantauan</button>
   </div>`;
 }
 
