@@ -1,0 +1,112 @@
+/* =========================================================================
+   INDEX.CSS — khusus halaman pemilih (index.html)
+   ========================================================================= */
+
+body.on-hero{
+  background:
+    radial-gradient(1000px 600px at 10% -10%, #3A2C1C 0%, transparent 60%),
+    radial-gradient(1000px 640px at 100% 0%, #1E2A22 0%, transparent 55%),
+    var(--ink);
+}
+body.on-app{ background:var(--bg-app); }
+
+.shell{min-height:100vh;display:flex;flex-direction:column;}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:24px clamp(16px,4vw,48px) 56px;}
+.stage.top{align-items:flex-start;}
+
+/* ---------- login ---------- */
+.login-wrap{width:100%;max-width:1080px;display:grid;grid-template-columns:1.05fr 1fr;gap:56px;align-items:center;}
+.login-intro{color:var(--paper);}
+.login-intro .eyebrow-seal{
+  width:58px;height:58px;border-radius:50%;border:2px solid var(--brass-soft);position:relative;
+  display:flex;align-items:center;justify-content:center;margin-bottom:26px;
+  font-family:'Fraunces',serif;font-size:23px;font-weight:700;color:var(--brass-soft);
+}
+.login-intro .eyebrow-seal::after{content:"";position:absolute;inset:4px;border:1px solid var(--brass-soft);border-radius:50%;opacity:.6;}
+.login-intro h1{font-size:clamp(32px,4vw,45px);line-height:1.12;font-weight:600;margin:0 0 16px;font-style:italic;}
+.login-intro p{color:#D8CFB9;font-size:15.5px;line-height:1.65;max-width:38ch;margin:0 0 26px;font-family:'Fraunces',serif;}
+.login-badges{display:flex;gap:0;flex-wrap:wrap;border-top:1px solid rgba(252,249,240,0.18);padding-top:16px;}
+.login-badge{display:flex;align-items:center;gap:8px;padding:6px 18px 6px 0;font-size:12.5px;color:#D8CFB9;border-right:1px solid rgba(252,249,240,0.18);margin-right:16px;}
+.login-badge:last-child{border-right:none;}
+
+.ballot-card{background:var(--paper);border-radius:var(--radius);box-shadow:var(--shadow);padding:36px 34px;border-top:4px solid var(--red);position:relative;}
+.ballot-card::before{content:"SURAT SUARA · AKSES PEMILIH";position:absolute;top:-11px;left:34px;background:var(--red);color:#fff;font-size:10.5px;letter-spacing:.08em;padding:3px 12px;border-radius:2px;}
+.submit-btn{width:100%;padding:14px;border:none;border-radius:var(--radius-pill);background:var(--red);color:#fff;font-size:14.5px;font-weight:700;letter-spacing:.01em;margin-top:6px;transition:transform .12s, background .15s, box-shadow .15s;box-shadow:0 14px 30px -16px rgba(168,31,48,.65);}
+.submit-btn:hover{background:var(--red-dark);}
+.submit-btn:active{transform:scale(0.98);}
+.submit-btn:disabled{opacity:.6;cursor:default;box-shadow:none;}
+
+/* ---------- setup screen ---------- */
+.setup-box{max-width:560px;background:var(--paper);border-radius:var(--radius);padding:32px 30px;box-shadow:var(--shadow);}
+.setup-box code{background:var(--paper-2);padding:2px 6px;border-radius:4px;font-size:13px;}
+.setup-box ol{padding-left:20px;line-height:1.8;font-size:14.5px;}
+
+/* ---------- vote head ---------- */
+.vote-head{width:100%;max-width:1080px;margin:0 auto 28px;}
+.vote-head h2{font-size:28px;margin:0 0 6px;font-weight:600;}
+.vote-head p{color:var(--ink-soft);font-size:14.5px;margin:0;}
+
+/* ---------- candidate cards — kartu surat suara bernomor, bukan kartu gradien ---------- */
+.candidate-grid{width:100%;max-width:1080px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;}
+.candidate-card{background:var(--paper);border:1.5px solid var(--paper-line);border-radius:var(--radius);display:flex;flex-direction:column;transition:border-color .18s, transform .18s;position:relative;padding-top:6px;}
+.candidate-card:hover{border-color:var(--ink);transform:translateY(-2px);}
+.candidate-nomor-stamp{
+  width:52px;height:52px;margin:6px auto 0;flex-shrink:0;color:var(--red);font-size:20px;
+}
+.candidate-avatar-wrap{margin:10px auto 0;width:84px;height:84px;}
+.candidate-avatar{width:84px;height:84px;}
+.candidate-body{padding:14px 22px 22px;flex:1;display:flex;flex-direction:column;text-align:center;}
+.candidate-body h3{font-size:19px;margin:2px 0 2px;font-weight:600;}
+.candidate-body .kelas{font-size:13px;color:var(--ink-soft);margin:0 0 14px;}
+.misi-toggle{background:transparent;border:1px solid var(--paper-line);padding:7px 14px;border-radius:var(--radius-pill);font-size:12.5px;color:var(--ink-soft);font-weight:600;margin:0 auto 12px;}
+.misi-toggle:hover{border-color:var(--ink);color:var(--ink);}
+.misi-panel{font-size:13.5px;line-height:1.6;color:var(--ink);margin-bottom:14px;text-align:left;background:var(--paper-2);border-radius:var(--radius-sm);padding:14px 16px;border-left:2px solid var(--brass);}
+.misi-panel .visi{margin:0 0 8px;font-style:italic;color:var(--ink-soft);font-family:'Fraunces',serif;}
+.misi-panel ul{margin:0;padding-left:18px;}
+.pilih-btn{margin-top:auto;width:100%;padding:12px;border:1.5px solid var(--ink);border-radius:var(--radius-pill);background:var(--ink);color:var(--paper);font-weight:700;font-size:14px;transition:background .15s,transform .12s;}
+.pilih-btn:hover{background:var(--ink-2);}
+.pilih-btn:active{transform:scale(0.97);}
+.pilih-btn:disabled{opacity:.5;}
+
+/* ---------- thanks screen ---------- */
+.thanks-box{max-width:420px;text-align:center;background:var(--paper);border-radius:var(--radius);padding:46px 34px;box-shadow:var(--shadow);border-top:4px solid var(--good);}
+.stamp-check{width:74px;height:74px;border-radius:50%;border:2.5px solid var(--good);color:var(--good);display:flex;align-items:center;justify-content:center;margin:0 auto 22px;font-size:32px;transform:rotate(-6deg);animation:stamp-in .4s cubic-bezier(.2,1.4,.4,1);}
+@keyframes stamp-in{from{transform:scale(1.6) rotate(-14deg);opacity:0;}to{transform:scale(1) rotate(-6deg);opacity:1;}}
+.thanks-box h2{margin:0 0 10px;font-size:22px;}
+.thanks-box p{color:var(--ink-soft);font-size:14.5px;line-height:1.6;margin:0 0 24px;}
+.ghost-btn{background:transparent;border:1.5px solid var(--ink);color:var(--ink);padding:12px 22px;border-radius:var(--radius-pill);font-size:14px;font-weight:700;}
+.ghost-btn:hover{background:var(--ink);color:var(--paper);}
+
+/* ---------- monitor (partisipasi) ---------- */
+.monitor-wrap{width:100%;max-width:760px;}
+.monitor-panel{background:var(--paper);border-radius:var(--radius);box-shadow:var(--shadow);padding:44px clamp(24px,5vw,56px);text-align:center;border-top:4px solid var(--brass);}
+.monitor-panel .ring-wrap{width:200px;height:200px;margin-bottom:24px;}
+.monitor-panel .ring-center .count{font-size:44px;}
+.monitor-panel .ring-center .of{font-size:13px;}
+.monitor-panel h2{font-size:20px;margin:0 0 4px;}
+.monitor-panel .sub{font-size:13.5px;color:var(--ink-soft);margin:0 0 32px;}
+.strip-label{font-size:12.5px;color:var(--ink-soft);margin:0 0 14px;text-align:left;font-weight:600;}
+.candidate-strip{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:8px;}
+.strip-item{width:66px;text-align:center;}
+.strip-item .avatar-circle{width:64px;height:64px;margin:0 auto 8px;}
+.strip-item .n{font-size:11px;color:var(--ink-soft);}
+.monitor-note{font-size:13px;color:var(--ink-soft);margin-top:28px;padding-top:22px;border-top:1px dashed var(--paper-line);}
+
+/* ---------- result (published) ---------- */
+.result-wrap{width:100%;max-width:640px;text-align:center;}
+.result-hero{background:radial-gradient(700px 400px at 50% -10%, #35291B 0%, var(--ink) 70%);border-radius:var(--radius);padding:44px 30px 38px;box-shadow:var(--shadow);}
+.result-hero .winner-halo{width:150px;height:150px;margin-bottom:20px;}
+.result-hero .halo-rays{inset:-24px;}
+.result-hero .tag{color:var(--brass-soft);font-size:13px;letter-spacing:.05em;margin:0 0 10px;font-weight:600;}
+.result-hero h1{color:var(--paper);font-size:clamp(24px,4vw,32px);margin:0 0 4px;font-weight:600;}
+.result-hero .kelas{color:#D8CFB9;font-size:14px;margin:0;}
+.result-wrap .rank-panel{margin-top:22px;}
+
+@media (max-width:900px){
+  .login-wrap{grid-template-columns:1fr;gap:34px;text-align:left;}
+  .login-intro p{max-width:none;}
+}
+@media (max-width:520px){
+  .ballot-card{padding:28px 22px;}
+  .rank-row .rname{width:96px;font-size:12.5px;}
+}
