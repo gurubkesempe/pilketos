@@ -8,11 +8,28 @@ body.on-hero{
     radial-gradient(1000px 640px at 100% 0%, #1E2A22 0%, transparent 55%),
     var(--ink);
 }
-body.on-app{ background:var(--bg-app); }
+/* Latar layar pemilihan/pemantauan: foto gedung sekolah, ditutup gradasi
+   gelap supaya teks & kartu putih di atasnya tetap terbaca jelas. */
+body.on-app{
+  background:
+    linear-gradient(180deg, rgba(20,16,11,.80) 0%, rgba(20,16,11,.55) 32%, rgba(20,16,11,.62) 100%),
+    url('img/bg-sekolah.jpg') center 30% / cover no-repeat;
+  background-color:var(--bg-app);
+}
 
 .shell{min-height:100vh;display:flex;flex-direction:column;}
 .stage{flex:1;display:flex;align-items:center;justify-content:center;padding:24px clamp(16px,4vw,48px) 56px;}
 .stage.top{align-items:flex-start;}
+
+/* ---------- vote head: panel kaca buram di atas foto latar ---------- */
+.vote-head{
+  width:100%;max-width:1080px;margin:0 auto 28px;
+  background:rgba(20,16,11,.5);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  border:1px solid rgba(252,249,240,.14);border-radius:var(--radius);
+  padding:20px 26px;
+}
+.vote-head h2{font-size:28px;margin:0 0 6px;font-weight:600;color:var(--paper);}
+.vote-head p{color:#D8CFB9;font-size:14.5px;margin:0;line-height:1.55;}
 
 /* ---------- login ---------- */
 .login-wrap{width:100%;max-width:1080px;display:grid;grid-template-columns:1.05fr 1fr;gap:56px;align-items:center;}
@@ -41,21 +58,44 @@ body.on-app{ background:var(--bg-app); }
 .setup-box code{background:var(--paper-2);padding:2px 6px;border-radius:4px;font-size:13px;}
 .setup-box ol{padding-left:20px;line-height:1.8;font-size:14.5px;}
 
-/* ---------- vote head ---------- */
-.vote-head{width:100%;max-width:1080px;margin:0 auto 28px;}
-.vote-head h2{font-size:28px;margin:0 0 6px;font-weight:600;}
-.vote-head p{color:var(--ink-soft);font-size:14.5px;margin:0;}
-
 /* ---------- candidate cards — kartu surat suara bernomor, bukan kartu gradien ---------- */
-.candidate-grid{width:100%;max-width:1080px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;}
-.candidate-card{background:var(--paper);border:1.5px solid var(--paper-line);border-radius:var(--radius);display:flex;flex-direction:column;transition:border-color .18s, transform .18s;position:relative;padding-top:6px;}
-.candidate-card:hover{border-color:var(--ink);transform:translateY(-2px);}
-.candidate-nomor-stamp{
-  width:52px;height:52px;margin:6px auto 0;flex-shrink:0;color:var(--red);font-size:20px;
+.candidate-grid{width:100%;max-width:1080px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px;}
+.candidate-card{
+  background:var(--paper);border:1.5px solid var(--paper-line);border-radius:var(--radius);
+  display:flex;flex-direction:column;overflow:hidden;position:relative;
+  box-shadow:var(--shadow-sm);
+  transition:border-color .18s, transform .18s, box-shadow .18s;
 }
-.candidate-avatar-wrap{margin:10px auto 0;width:84px;height:84px;}
-.candidate-avatar{width:84px;height:84px;}
-.candidate-body{padding:14px 22px 22px;flex:1;display:flex;flex-direction:column;text-align:center;}
+.candidate-card:hover{border-color:var(--ink);transform:translateY(-3px);box-shadow:var(--shadow);}
+
+/* Foto kandidat versi kartu besar — bukan lingkaran kecil, full-width di
+   bagian atas kartu, rasio potret, bisa diklik untuk zoom. */
+.candidate-photo-wrap{
+  position:relative;width:100%;aspect-ratio:4/5;overflow:hidden;
+  background:var(--paper-2);cursor:zoom-in;
+}
+.candidate-photo{width:100%;height:100%;object-fit:cover;display:block;transition:transform .35s ease;}
+.candidate-photo-wrap:hover .candidate-photo{transform:scale(1.05);}
+.photo-zoom-hint{
+  position:absolute;right:10px;bottom:10px;background:rgba(20,16,11,.72);color:var(--paper);
+  font-size:11.5px;font-weight:600;padding:5px 11px;border-radius:var(--radius-pill);
+  opacity:0;transform:translateY(4px);transition:opacity .18s, transform .18s;
+  pointer-events:none;
+}
+.candidate-photo-wrap:hover .photo-zoom-hint,
+.candidate-photo-wrap:focus-visible .photo-zoom-hint{opacity:1;transform:translateY(0);}
+.candidate-photo-wrap::after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg, transparent 55%, rgba(20,16,11,.32) 100%);
+  pointer-events:none;
+}
+
+.candidate-nomor-stamp{
+  position:absolute;top:14px;left:14px;width:40px;height:40px;
+  background:var(--paper);border-radius:50%;color:var(--red);font-size:16px;
+  box-shadow:0 4px 10px -3px rgba(20,16,11,.4);z-index:1;
+}
+.candidate-body{padding:16px 22px 22px;flex:1;display:flex;flex-direction:column;text-align:center;}
 .candidate-body h3{font-size:19px;margin:2px 0 2px;font-weight:600;}
 .candidate-body .kelas{font-size:13px;color:var(--ink-soft);margin:0 0 14px;}
 .misi-toggle{background:transparent;border:1px solid var(--paper-line);padding:7px 14px;border-radius:var(--radius-pill);font-size:12.5px;color:var(--ink-soft);font-weight:600;margin:0 auto 12px;}
@@ -101,6 +141,51 @@ body.on-app{ background:var(--bg-app); }
 .result-hero h1{color:var(--paper);font-size:clamp(24px,4vw,32px);margin:0 0 4px;font-weight:600;}
 .result-hero .kelas{color:#D8CFB9;font-size:14px;margin:0;}
 .result-wrap .rank-panel{margin-top:22px;}
+
+/* ---------- lightbox zoom foto kandidat ---------- */
+.photo-zoom-overlay{background:rgba(12,9,6,.86);backdrop-filter:blur(3px);z-index:80;}
+.photo-zoom-box{
+  background:var(--ink);color:var(--paper);border-radius:var(--radius);
+  width:100%;max-width:560px;box-shadow:var(--shadow);
+  display:flex;flex-direction:column;overflow:hidden;
+  border-top:3px solid var(--brass-soft);margin:auto;
+}
+.photo-zoom-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:18px 20px 12px;}
+.photo-zoom-head h3{margin:0 0 2px;font-size:17px;color:var(--paper);}
+.photo-zoom-head p{margin:0;font-size:12.5px;color:#D8CFB9;}
+.zoom-close-btn{
+  background:transparent;border:1.5px solid rgba(252,249,240,.3);color:var(--paper);
+  width:32px;height:32px;border-radius:50%;font-size:14px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;transition:border-color .15s, background .15s;
+}
+.zoom-close-btn:hover{border-color:var(--brass-soft);background:rgba(252,249,240,.08);}
+.photo-zoom-stage{
+  width:100%;aspect-ratio:1/1;max-height:60vh;overflow:hidden;position:relative;
+  background:#0E0B07;touch-action:none;
+}
+.photo-zoom-stage img{
+  width:100%;height:100%;object-fit:contain;display:block;
+  transform-origin:center center;user-select:none;-webkit-user-select:none;
+  transition:transform .06s linear;
+}
+.photo-zoom-controls{
+  display:flex;align-items:center;gap:8px;padding:14px 20px 20px;flex-wrap:wrap;
+}
+.zoom-btn{
+  width:36px;height:36px;border-radius:50%;background:rgba(252,249,240,.08);
+  border:1.5px solid rgba(252,249,240,.24);color:var(--paper);font-size:17px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;transition:background .15s, border-color .15s;
+  flex-shrink:0;
+}
+.zoom-btn:hover{background:rgba(252,249,240,.16);border-color:var(--brass-soft);}
+.zoom-reset-btn{width:auto;padding:0 14px;border-radius:var(--radius-pill);font-size:12.5px;font-weight:600;}
+.zoom-hint-text{font-size:11.5px;color:#B7AC94;margin-left:auto;}
+
+@media (max-width:520px){
+  .photo-zoom-box{max-width:100%;}
+  .photo-zoom-stage{aspect-ratio:4/5;max-height:52vh;}
+  .zoom-hint-text{margin-left:0;width:100%;}
+}
 
 @media (max-width:900px){
   .login-wrap{grid-template-columns:1fr;gap:34px;text-align:left;}
