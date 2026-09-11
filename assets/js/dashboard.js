@@ -18,7 +18,7 @@ const state = {
   diagResult:null, diagRunning:false,
   candidates:[],
   voters:[], voterStats:{totalSiswa:0,totalGuru:0,total:0},
-  voterSearch:'', voterRoleFilter:'ALL',
+  voterSearch:'', voterRoleFilter:'ALL', voterKelasFilter:'ALL', voterStatusFilter:'ALL',
   voterCount:0, tally:null, published:false,
   editingCandidate:null,
   photoBase64:null, photoType:null, photoName:null,
@@ -249,9 +249,24 @@ function filteredVoters(){
   const q = state.voterSearch.trim().toLowerCase();
   return state.voters.filter(v => {
     if(state.voterRoleFilter !== 'ALL' && v.role !== state.voterRoleFilter) return false;
+    if(state.voterKelasFilter !== 'ALL' && (v.kelas||'') !== state.voterKelasFilter) return false;
+    if(state.voterStatusFilter === 'VOTED' && !v.sudahMemilih) return false;
+    if(state.voterStatusFilter === 'NOT_VOTED' && v.sudahMemilih) return false;
     if(!q) return true;
-    return String(v.id).toLowerCase().includes(q) || String(v.nama).toLowerCase().includes(q);
+    return String(v.id).toLowerCase().includes(q) || String(v.nama).toLowerCase().includes(q) || String(v.kelas||'').toLowerCase().includes(q);
   });
+}
+
+/** Daftar kelas unik dari data pemilih (buat isi dropdown filter Kelas),
+ * diurutkan alami supaya "7A, 7B, 8A, 9C" dst bukan urutan abjad string. */
+function distinctKelasList(){
+  const set = new Set();
+  state.voters.forEach(v => { if(v.kelas) set.add(v.kelas); });
+  return Array.from(set).sort((a,b) => a.localeCompare(b, 'id', {numeric:true, sensitivity:'base'}));
+}
+
+function hasActiveVoterFilter(){
+  return state.voterSearch.trim() !== '' || state.voterRoleFilter !== 'ALL' || state.voterKelasFilter !== 'ALL' || state.voterStatusFilter !== 'ALL';
 }
 
 function voterRowsHtml(list){
@@ -274,15 +289,29 @@ function voterRowsHtml(list){
     </tr>`).join('');
 }
 
-/** Update tabel pemilih SAJA (tanpa render ulang seluruh halaman) supaya
- * fokus di kotak pencarian tidak hilang tiap kali user mengetik. */
+/** Update tabel pemilih + ringkasan jumlah + tombol reset SAJA (tanpa
+ * render ulang seluruh halaman) supaya fokus di kotak pencarian tidak
+ * hilang tiap kali user mengetik. */
 function updateVoterTableOnly(){
+  const list = filteredVoters();
   const tbody = document.getElementById('voter-tbody');
-  if(tbody) tbody.innerHTML = voterRowsHtml(filteredVoters());
+  if(tbody) tbody.innerHTML = voterRowsHtml(list);
+
+  const summary = document.getElementById('voter-filter-summary');
+  if(summary) summary.textContent = `Menampilkan ${list.length} dari ${state.voterStats.total} pemilih.`;
+
+  const resetBtn = document.getElementById('voter-reset-btn');
+  if(resetBtn){
+    resetBtn.outerHTML = hasActiveVoterFilter()
+      ? '<button class="btn btn-outline" data-action="reset-voter-filter" id="voter-reset-btn">✕ Reset filter</button>'
+      : '<span id="voter-reset-btn"></span>';
+  }
 }
 
 function tabPemilih(){
   const filtered = filteredVoters();
+  const kelasOptions = distinctKelasList();
+  const isActive = (f) => f ? 'is-active' : '';
   return `
   <div class="section-head">
     <div>
@@ -296,19 +325,38 @@ function tabPemilih(){
     </div>
   </div>
   <div class="stat-row">
-    <div class="mini-stat"><div class="n">${state.voterStats.total}</div><div class="l">Total pemilih</div></div>
-    <div class="mini-stat"><div class="n">${state.voterStats.totalSiswa}</div><div class="l">Siswa</div></div>
-    <div class="mini-stat"><div class="n">${state.voterStats.totalGuru}</div><div class="l">Guru</div></div>
-    <div class="mini-stat good"><div class="n">${state.voterCount}</div><div class="l">Sudah memilih</div></div>
+    <button class="mini-stat ${isActive(state.voterRoleFilter==='ALL' && state.voterKelasFilter==='ALL' && state.voterStatusFilter==='ALL')}" data-action="quick-filter" data-role="ALL" data-status="ALL" title="Tampilkan semua pemilih">
+      <div class="n">${state.voterStats.total}</div><div class="l">Total pemilih</div>
+    </button>
+    <button class="mini-stat ${isActive(state.voterRoleFilter==='Siswa')}" data-action="quick-filter" data-role="Siswa" title="Tampilkan siswa saja">
+      <div class="n">${state.voterStats.totalSiswa}</div><div class="l">Siswa</div>
+    </button>
+    <button class="mini-stat ${isActive(state.voterRoleFilter==='Guru')}" data-action="quick-filter" data-role="Guru" title="Tampilkan guru saja">
+      <div class="n">${state.voterStats.totalGuru}</div><div class="l">Guru</div>
+    </button>
+    <button class="mini-stat good ${isActive(state.voterStatusFilter==='VOTED')}" data-action="quick-filter" data-status="VOTED" title="Tampilkan yang sudah memberikan suara">
+      <div class="n">${state.voterCount}</div><div class="l">Sudah memilih</div>
+    </button>
   </div>
   <div class="toolbar">
-    <input type="search" id="voter-search" placeholder="Cari ID atau nama…" value="${esc(state.voterSearch)}">
+    <input type="search" id="voter-search" placeholder="Cari ID, nama, atau kelas…" value="${esc(state.voterSearch)}">
+    <select id="voter-kelas-filter">
+      <option value="ALL" ${state.voterKelasFilter==='ALL'?'selected':''}>Semua Kelas</option>
+      ${kelasOptions.map(k => `<option value="${esc(k)}" ${state.voterKelasFilter===k?'selected':''}>${esc(k)}</option>`).join('')}
+    </select>
     <select id="voter-role-filter">
       <option value="ALL" ${state.voterRoleFilter==='ALL'?'selected':''}>Semua Role</option>
       <option value="Siswa" ${state.voterRoleFilter==='Siswa'?'selected':''}>Siswa</option>
       <option value="Guru" ${state.voterRoleFilter==='Guru'?'selected':''}>Guru</option>
     </select>
+    <select id="voter-status-filter">
+      <option value="ALL" ${state.voterStatusFilter==='ALL'?'selected':''}>Semua Status</option>
+      <option value="VOTED" ${state.voterStatusFilter==='VOTED'?'selected':''}>Sudah memilih</option>
+      <option value="NOT_VOTED" ${state.voterStatusFilter==='NOT_VOTED'?'selected':''}>Belum memilih</option>
+    </select>
+    ${hasActiveVoterFilter() ? '<button class="btn btn-outline" data-action="reset-voter-filter" id="voter-reset-btn">✕ Reset filter</button>' : '<span id="voter-reset-btn"></span>'}
   </div>
+  <p class="filter-summary" id="voter-filter-summary">Menampilkan ${filtered.length} dari ${state.voterStats.total} pemilih.</p>
   <div class="table-scroll">
   <table class="data-table">
     <thead><tr><th>ID (NISN/NIP)</th><th>Nama</th><th>Kelas</th><th>Role</th><th>Status</th><th></th></tr></thead>
@@ -941,6 +989,20 @@ app.addEventListener('click', (e) => {
   else if(action === 'close-delete-voter-modal'){ state.deleteVoterTarget = null; render(); }
   else if(action === 'confirm-delete-voter'){ confirmDeleteVoter(); }
   else if(action === 'print-voter-cards'){ printVoterCards(filteredVoters()); }
+  else if(action === 'quick-filter'){
+    // Klik salah satu kartu ringkasan (mis. "Sudah memilih") mereset filter
+    // lain dulu supaya hasilnya tidak membingungkan (contoh: filter Kelas
+    // lama nyangkut lalu bikin "Guru" kelihatan kosong).
+    state.voterSearch = '';
+    state.voterKelasFilter = 'ALL';
+    state.voterRoleFilter = t.dataset.role || 'ALL';
+    state.voterStatusFilter = t.dataset.status || 'ALL';
+    render();
+  }
+  else if(action === 'reset-voter-filter'){
+    state.voterSearch = ''; state.voterRoleFilter = 'ALL'; state.voterKelasFilter = 'ALL'; state.voterStatusFilter = 'ALL';
+    render();
+  }
   else if(action === 'open-import'){ openImport(); }
   else if(action === 'close-import-modal'){ closeImport(); }
   else if(action === 'import-mode'){ setImportMode(t.dataset.mode); }
@@ -964,7 +1026,15 @@ app.addEventListener('input', (e) => {
 app.addEventListener('change', (e) => {
   if(e.target.id === 'voter-role-filter'){
     state.voterRoleFilter = e.target.value;
-    updateVoterTableOnly();
+    render();
+  }
+  else if(e.target.id === 'voter-kelas-filter'){
+    state.voterKelasFilter = e.target.value;
+    render();
+  }
+  else if(e.target.id === 'voter-status-filter'){
+    state.voterStatusFilter = e.target.value;
+    render();
   }
   else if(e.target.id === 'cf-foto'){
     const file = e.target.files && e.target.files[0];
