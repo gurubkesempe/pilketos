@@ -7,7 +7,7 @@
    ========================================================================= */
 
 /* ============ KONFIGURASI — wajib diisi sebelum di-deploy ============ */
-const API_URL = "https://script.google.com/macros/s/AKfycbx44NGnrYhmUvGEIGS3z7hhFzp6wjBQ6CRoDKWk77258gqiRMgbrb20cIjaYQs7RdWM/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbzLm75QQ6tyzC0fFiNXWFbxQ2ylHVWiwbXqcNTfZZNBMkftRYxF3oxeP8G32_nz5NwN/exec";
 const SEKOLAH = "SMP 2 Sragi";
 const TAHUN_AJARAN = "2026/2027";
 
@@ -134,13 +134,47 @@ function triggerDownload(blob, filename){
   URL.revokeObjectURL(url);
 }
 
+/**
+ * Pemetaan baris impor berdasarkan NAMA header (ID/Nama/Kelas/Role),
+ * bukan cuma posisi kolom. Ini supaya urutan kolom di file panitia tidak
+ * jadi jebakan — kalau kolom "Role" ditaruh sebelum "Kelas" (beda dari
+ * urutan template), datanya tetap kebaca benar selama header-nya ada.
+ * Kalau baris pertama tidak dikenali sebagai header (tidak ada sel
+ * bertuliskan "id"), baru dipakai urutan posisi standar: ID, Nama,
+ * Kelas, Role — sebagai jaring pengaman untuk data tanpa header.
+ */
+function mapImportRows(rows2d){
+  if(!rows2d || !rows2d.length) return [];
+  const headerRow = rows2d[0].map(c => String(c==null?'':c).trim().toLowerCase());
+  const hasHeader = headerRow.indexOf('id') !== -1;
+
+  let idIdx = 0, namaIdx = 1, kelasIdx = 2, roleIdx = 3;
+  let dataRows = rows2d;
+  if(hasHeader){
+    idIdx = headerRow.indexOf('id');
+    const foundNama = headerRow.findIndex(h => h === 'nama' || h === 'name');
+    const foundKelas = headerRow.findIndex(h => h === 'kelas' || h === 'class');
+    const foundRole = headerRow.findIndex(h => h === 'role' || h === 'peran');
+    namaIdx = foundNama !== -1 ? foundNama : 1;
+    kelasIdx = foundKelas; // boleh -1 kalau memang tidak ada kolom Kelas
+    roleIdx = foundRole;   // boleh -1 kalau memang tidak ada kolom Role
+    dataRows = rows2d.slice(1);
+  }
+
+  return dataRows
+    .filter(r => r && r.length && String(r[idIdx]==null?'':r[idIdx]).trim() !== '')
+    .map(r => ({
+      id: String(r[idIdx]==null?'':r[idIdx]).trim(),
+      nama: String(r[namaIdx]==null?'':r[namaIdx]).trim(),
+      kelas: kelasIdx >= 0 ? String(r[kelasIdx]==null?'':r[kelasIdx]).trim() : '',
+      role: roleIdx >= 0 ? (String(r[roleIdx]==null?'':r[roleIdx]).trim() || 'Siswa') : 'Siswa'
+    }));
+}
+
 function parseCsvLines(text){
   const lines = text.split('\n').map(l=>l.trim()).filter(Boolean);
-  if(lines.length && /^id\s*[,\t]/i.test(lines[0])) lines.shift(); // buang baris header kalau ada
-  return lines.map(line => {
-    const parts = line.split(/\t|,/).map(s=>s.trim());
-    return { id: parts[0]||'', nama: parts[1]||'', kelas: parts[2]||'', role: parts[3]||'Siswa' };
-  });
+  const rows2d = lines.map(line => line.split(/\t|,/).map(s=>s.trim()));
+  return mapImportRows(rows2d);
 }
 
 /** Baca file .xlsx/.xls jadi baris {id, nama, kelas, role} langsung di browser. */
@@ -152,11 +186,8 @@ function parseXlsxFile(file){
       try{
         const wb = XLSX.read(reader.result, {type:'array'});
         const ws = wb.Sheets[wb.SheetNames[0]];
-        const rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
-        const list = rows
-          .filter(r => r.length && String(r[0]).trim() !== '' && !/^id$/i.test(String(r[0]).trim()))
-          .map(r => ({ id:String(r[0]||'').trim(), nama:String(r[1]||'').trim(), kelas:String(r[2]||'').trim(), role:String(r[3]||'Siswa').trim() }));
-        resolve(list);
+        const rows2d = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
+        resolve(mapImportRows(rows2d));
       }catch(err){ reject(new Error('Gagal membaca file Excel. Pastikan formatnya sesuai template.')); }
     };
     reader.onerror = () => reject(new Error('Gagal membaca file.'));
