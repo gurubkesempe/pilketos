@@ -23,7 +23,7 @@ const state = {
   editingCandidate:null,
   photoBase64:null, photoType:null, photoName:null,
   deleteTarget:null,
-  editingVoter:null, deleteVoterTarget:null,
+  editingVoter:null, deleteVoterTarget:null, resetVoterTarget:null, bulkVoterAction:null,
   importOpen:false, importMode:'file', importText:'', importResult:null, importFileName:'',
   formError:'',
   pollHandle:null,
@@ -58,6 +58,8 @@ function render(){
   if(state.deleteTarget) app.innerHTML += modalConfirmDelete(state.deleteTarget);
   if(state.editingVoter !== null) app.innerHTML += modalVoterForm(state.editingVoter);
   if(state.deleteVoterTarget) app.innerHTML += modalConfirmDeleteVoter(state.deleteVoterTarget);
+  if(state.resetVoterTarget) app.innerHTML += modalConfirmResetVoter(state.resetVoterTarget);
+  if(state.bulkVoterAction) app.innerHTML += modalConfirmBulkVoterAction();
   if(state.importOpen) app.innerHTML += modalImport();
   if(state.countdown !== null) app.innerHTML += screenCountdown();
   if(state.showReveal) app.innerHTML += screenReveal();
@@ -283,6 +285,7 @@ function voterRowsHtml(list){
       <td>
         <div class="row-actions">
           <button class="btn btn-outline" data-action="edit-voter" data-id="${esc(v.id)}">Edit</button>
+          ${v.sudahMemilih ? `<button class="btn btn-outline" data-action="ask-reset-voter" data-id="${esc(v.id)}" title="Hapus suaranya agar bisa memilih ulang">↺ Reset</button>` : ''}
           <button class="btn btn-danger" data-action="ask-delete-voter" data-id="${esc(v.id)}">Hapus</button>
         </div>
       </td>
@@ -323,6 +326,10 @@ function tabPemilih(){
       <button class="btn btn-outline" data-action="open-import">⇪ Impor Massal</button>
       <button class="btn btn-primary" data-action="add-voter">+ Tambah Pemilih</button>
     </div>
+  </div>
+  <div class="danger-zone-row" style="display:flex;gap:10px;justify-content:flex-end;margin:-6px 0 14px;flex-wrap:wrap;">
+    <button class="btn btn-outline" data-action="ask-reset-all-votes" title="Kosongkan status &quot;sudah memilih&quot; SEMUA pemilih sekaligus">↺ Reset Semua Status</button>
+    <button class="btn btn-danger" data-action="ask-delete-all-voters" title="Hapus SELURUH daftar pemilih sekaligus">🗑 Hapus Semua Pemilih</button>
   </div>
   <div class="stat-row">
     <button class="mini-stat ${isActive(state.voterRoleFilter==='ALL' && state.voterKelasFilter==='ALL' && state.voterStatusFilter==='ALL')}" data-action="quick-filter" data-role="ALL" data-status="ALL" title="Tampilkan semua pemilih">
@@ -411,6 +418,41 @@ function modalConfirmDeleteVoter(v){
       <div class="modal-actions">
         <button class="cancel" data-action="close-delete-voter-modal">Batal</button>
         <button class="confirm danger" data-action="confirm-delete-voter" ${state.submitting?'disabled':''}>${state.submitting?'Menghapus…':'Ya, hapus'}</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function modalConfirmResetVoter(v){
+  return `
+  <div class="modal-overlay" data-action="close-reset-voter-modal">
+    <div class="modal-box confirm-box">
+      <h3>Reset status pemilih ini?</h3>
+      <p style="font-size:14px;color:var(--ink-soft);line-height:1.6;margin:0 0 20px;">Suara yang sudah diberikan <strong>${esc(v.nama)}</strong> (ID ${esc(v.id)}) akan dihapus, dan statusnya kembali ke "Belum memilih" sehingga dia bisa login &amp; memilih ulang. Data pemilihnya sendiri tetap ada. Tindakan ini tidak bisa dibatalkan.</p>
+      <div class="modal-actions">
+        <button class="cancel" data-action="close-reset-voter-modal">Batal</button>
+        <button class="confirm danger" data-action="confirm-reset-voter" ${state.submitting?'disabled':''}>${state.submitting?'Mereset…':'Ya, reset'}</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function modalConfirmBulkVoterAction(){
+  const mode = state.bulkVoterAction;
+  const isReset = mode === 'reset-all';
+  const title = isReset ? 'Reset status SEMUA pemilih?' : 'Hapus SEMUA data pemilih?';
+  const desc = isReset
+    ? `Seluruh catatan suara yang sudah masuk (<strong>${state.voterCount} suara</strong>) akan dihapus, dan status semua pemilih kembali ke "Belum memilih". Daftar pemilih &amp; data kandidat <strong>tidak</strong> ikut terhapus — hanya catatan siapa-sudah-memilih-apa. Tindakan ini tidak bisa dibatalkan.`
+    : `Seluruh daftar pemilih (<strong>${state.voterStats.total} orang</strong>) akan dihapus permanen dari sistem. Catatan suara yang sudah masuk <strong>tidak</strong> ikut terhapus (tetap terhitung di hasil pemilihan). Tindakan ini cocok kalau kamu mau mengganti total daftar pemilih (mis. tahun ajaran baru) — tapi tidak bisa dibatalkan.`;
+  return `
+  <div class="modal-overlay" data-action="close-bulk-voter-modal">
+    <div class="modal-box confirm-box">
+      <h3>${title}</h3>
+      <p style="font-size:14px;color:var(--ink-soft);line-height:1.6;margin:0 0 20px;">${desc}</p>
+      ${state.formError ? '<div class="form-error">'+esc(state.formError)+'</div>' : ''}
+      <div class="modal-actions">
+        <button class="cancel" data-action="close-bulk-voter-modal">Batal</button>
+        <button class="confirm danger" data-action="confirm-bulk-voter-action" ${state.submitting?'disabled':''}>${state.submitting?'Memproses…':(isReset?'Ya, reset semua':'Ya, hapus semua')}</button>
       </div>
     </div>
   </div>`;
@@ -777,6 +819,52 @@ async function confirmDeleteVoter(){
   }
 }
 
+function askResetVoter(id){
+  const v = state.voters.find(x => String(x.id) === String(id));
+  if(!v) return;
+  state.resetVoterTarget = v;
+  render();
+}
+async function confirmResetVoter(){
+  const v = state.resetVoterTarget;
+  if(!v) return;
+  state.submitting = true; render();
+  try{
+    const res = await apiPost({action:'resetVoter', id: v.id});
+    state.submitting = false;
+    state.resetVoterTarget = null;
+    if(!res.ok){ toast(res.error || 'Gagal mereset pemilih.', 'err'); render(); return; }
+    toast('Status pemilih direset — dia bisa memilih ulang.');
+    await loadAll();
+  }catch(err){
+    state.submitting = false; state.resetVoterTarget = null;
+    toast(err.message || 'Gagal terhubung ke server.', 'err'); render();
+  }
+}
+
+function askBulkVoterAction(mode){
+  state.bulkVoterAction = mode; // 'reset-all' | 'delete-all'
+  state.formError = '';
+  render();
+}
+async function confirmBulkVoterAction(){
+  const mode = state.bulkVoterAction;
+  if(!mode) return;
+  state.submitting = true; state.formError = ''; render();
+  try{
+    const res = await apiPost({action: mode === 'reset-all' ? 'resetAllVotes' : 'deleteAllVoters'});
+    state.submitting = false;
+    if(!res.ok){ state.formError = res.error || 'Gagal memproses permintaan.'; render(); return; }
+    state.bulkVoterAction = null;
+    toast(mode === 'reset-all' ? 'Status semua pemilih berhasil direset.' : 'Seluruh daftar pemilih berhasil dihapus.');
+    await loadAll();
+  }catch(err){
+    state.submitting = false;
+    state.formError = err.message || 'Gagal terhubung ke server.';
+    render();
+  }
+}
+
 /**
  * Cetak kartu pemilih kecil (bukan satu halaman penuh per orang) — cocok
  * dibagikan ke tiap siswa/guru berisi username & password login mereka
@@ -970,7 +1058,7 @@ app.addEventListener('click', (e) => {
   else if(action === 'run-diag'){ runDiagnostic(); }
   else if(action === 'logout'){
     if(state.pollHandle) clearInterval(state.pollHandle);
-    Object.assign(state, {screen:'login', admin:null, loginError:'', candidates:[], voters:[], netError:'', editingCandidate:null, deleteTarget:null, editingVoter:null, deleteVoterTarget:null, importOpen:false, tally:null, published:false, showReveal:false, pollHandle:null});
+    Object.assign(state, {screen:'login', admin:null, loginError:'', candidates:[], voters:[], netError:'', editingCandidate:null, deleteTarget:null, editingVoter:null, deleteVoterTarget:null, resetVoterTarget:null, bulkVoterAction:null, importOpen:false, tally:null, published:false, showReveal:false, pollHandle:null});
     render();
   }
   else if(action === 'tab'){ state.tab = t.dataset.tab; state.netError=''; render(); }
@@ -988,6 +1076,13 @@ app.addEventListener('click', (e) => {
   else if(action === 'ask-delete-voter'){ askDeleteVoter(t.dataset.id); }
   else if(action === 'close-delete-voter-modal'){ state.deleteVoterTarget = null; render(); }
   else if(action === 'confirm-delete-voter'){ confirmDeleteVoter(); }
+  else if(action === 'ask-reset-voter'){ askResetVoter(t.dataset.id); }
+  else if(action === 'close-reset-voter-modal'){ state.resetVoterTarget = null; render(); }
+  else if(action === 'confirm-reset-voter'){ confirmResetVoter(); }
+  else if(action === 'ask-reset-all-votes'){ askBulkVoterAction('reset-all'); }
+  else if(action === 'ask-delete-all-voters'){ askBulkVoterAction('delete-all'); }
+  else if(action === 'close-bulk-voter-modal'){ state.bulkVoterAction = null; state.formError=''; render(); }
+  else if(action === 'confirm-bulk-voter-action'){ confirmBulkVoterAction(); }
   else if(action === 'print-voter-cards'){ printVoterCards(filteredVoters()); }
   else if(action === 'quick-filter'){
     // Klik salah satu kartu ringkasan (mis. "Sudah memilih") mereset filter
