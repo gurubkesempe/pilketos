@@ -7,7 +7,7 @@
    ========================================================================= */
 
 /* ============ KONFIGURASI — wajib diisi sebelum di-deploy ============ */
-const API_URL = "https://script.google.com/macros/s/AKfycbz64G8-vKyf76i-tNSthHuFv4SXqV0jeM4julVqs8Ep3-6_xuB2svkn8mCPlEu_ENDn/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbx44NGnrYhmUvGEIGS3z7hhFzp6wjBQ6CRoDKWk77258gqiRMgbrb20cIjaYQs7RdWM/exec";
 const SEKOLAH = "SMP 2 Sragi";
 const TAHUN_AJARAN = "2026/2027";
 
