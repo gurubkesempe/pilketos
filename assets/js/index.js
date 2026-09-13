@@ -527,6 +527,12 @@ app.addEventListener('keydown', (e) => {
     e.preventDefault();
     openZoom(e.target.dataset.nomor);
   }
+  // Supaya bisa pencet Enter di kolom Username/Password untuk langsung
+  // login, tanpa perlu klik tombol "Masuk" pakai mouse/jari.
+  if(e.key === 'Enter' && (e.target.id === 'in-id' || e.target.id === 'in-pass')){
+    e.preventDefault();
+    if(!state.submitting) handleLogin();
+  }
 });
 document.addEventListener('keydown', (e) => {
   if(e.key === 'Escape' && state.zoomPhoto) closeZoom();

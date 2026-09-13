@@ -1172,4 +1172,13 @@ app.addEventListener('error', (e) => {
   }
 }, true);
 
+/* Supaya bisa pencet Enter di kolom Username/Password login panitia untuk
+   langsung login, tanpa perlu klik tombol "Masuk Dashboard" pakai mouse/jari. */
+app.addEventListener('keydown', (e) => {
+  if(e.key === 'Enter' && (e.target.id === 'in-user' || e.target.id === 'in-pass')){
+    e.preventDefault();
+    if(!state.submitting) handleLogin();
+  }
+});
+
 render();
