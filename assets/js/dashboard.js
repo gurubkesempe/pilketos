@@ -381,7 +381,7 @@ function modalVoterForm(v){
       <div class="grid2">
         <div class="field">
           <label for="vf-id">ID (NISN/NIP)</label>
-          <input id="vf-id" inputmode="numeric" value="${esc(v.id||'')}" ${isNew?'':'disabled'} placeholder="Contoh: 0051234567">
+          <input id="vf-id" inputmode="numeric" value="${esc(v.id||'')}" placeholder="Contoh: 0051234567">
         </div>
         <div class="field">
           <label for="vf-role">Role</label>
@@ -399,7 +399,7 @@ function modalVoterForm(v){
         <label for="vf-kelas">Kelas</label>
         <input id="vf-kelas" value="${esc(v.kelas||'')}" placeholder="Contoh: IX A">
       </div>
-      <p class="field-note">Kelas khusus untuk data siswa (wajib diisi kalau role Siswa) — boleh dikosongkan untuk Guru. Password login pemilih otomatis sama dengan ID-nya sendiri.</p>
+      <p class="field-note">Kelas khusus untuk data siswa (wajib diisi kalau role Siswa) — boleh dikosongkan untuk Guru. Password login pemilih otomatis sama dengan ID-nya sendiri.${isNew?'':' Mengubah ID di sini juga akan mengganti password login orang ini (password = ID) dan status "sudah memilih"-nya (kalau ada) ikut dipindah ke ID baru.'}</p>
       ${state.formError ? '<div class="form-error">'+esc(state.formError)+'</div>' : ''}
       <div class="modal-actions">
         <button class="cancel" data-action="close-voter-modal">Batal</button>
@@ -778,12 +778,13 @@ async function saveVoter(){
   const nama = document.getElementById('vf-nama').value.trim();
   const role = document.getElementById('vf-role').value;
   const kelas = document.getElementById('vf-kelas').value.trim();
+  const originalId = (state.editingVoter && state.editingVoter.id) ? String(state.editingVoter.id) : '';
   if(!id || !nama){ state.formError = 'ID dan nama wajib diisi.'; render(); return; }
   if(role === 'Siswa' && !kelas){ state.formError = 'Kelas wajib diisi untuk pemilih dengan role Siswa.'; render(); return; }
 
   state.submitting = true; render();
   try{
-    const res = await apiPost({action:'saveVoter', id, nama, kelas, role});
+    const res = await apiPost({action:'saveVoter', id, nama, kelas, role, originalId});
     state.submitting = false;
     if(!res.ok){ state.formError = res.error || 'Gagal menyimpan pemilih.'; render(); return; }
     state.editingVoter = null;
